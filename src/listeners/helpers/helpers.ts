@@ -41,4 +41,5 @@ export const escapeTextForMarkdown2 = (text: string): string => escapers.Markdow
  * @param {number} id
  * @return {string}
  */
-export const mention = (username: string, id: number): string => `[@${username}](tg://user?id=${id})`;
+export const mention = (username: string, id: number): string =>
+  `[@${username}](tg://user?id=${id})`;
