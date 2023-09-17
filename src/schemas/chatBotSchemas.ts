@@ -5,6 +5,7 @@ export type SentWelcomeMessageType = {
   _id: ObjectId;
   messageId: number;
   chatId: number;
+  chatTitle: string;
   createdAt: Date;
   updatedAt: Date;
 };
@@ -16,6 +17,10 @@ export const sentWelcomeMessageSchema = new Schema<SentWelcomeMessageType>(
     },
     chatId: {
       type: Number,
+      required: true,
+    },
+    chatTitle: {
+      type: String,
       required: true,
     },
   },

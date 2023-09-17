@@ -7,8 +7,6 @@ const connectToMongoose = async (configService: IConfigService) => {
   )}@botdb.ixjj9ng.mongodb.net/${configService.get('MONGO_DB_NAME')}`;
 
   try {
-    // For a server console logs
-    console.log('Connecting...');
     await mongoose.connect(uri);
     console.log('Connected to Mongoose');
   } catch (error) {

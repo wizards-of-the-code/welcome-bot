@@ -28,6 +28,7 @@ const onNewChatMembers = (bot: Bot) => {
         await handleDeletingPreviousMessage(ctx, {
           messageId,
           chatId: chat.id,
+          chatTitle: chat.title,
         });
       }
     } catch (e) {

@@ -11,28 +11,35 @@ import { BotContext } from '../../contracts';
 /**
  * Deletes previous sent message, add current sent message to db
  * @param {BotContext} ctx
- * @param {ChatBotCollection} sentMessage
+ * @param {SentWelcomeMessageType} sentMessage
  * */
 export const handleDeletingPreviousMessage = async (
   ctx: BotContext,
   sentMessage: Omit<SentWelcomeMessageType, 'createdAt' | 'updatedAt' | '_id'>,
 ) => {
-  try {
-    const previousSentMessage = await SentWelcomeMessage.findOneAndDelete()
-      .select('messageId chatId')
-      .lean();
+  if (ctx.chat && 'title' in ctx.chat) {
+    const chatTitle = ctx.chat.title;
 
-    if (previousSentMessage) {
-      try {
-        await ctx.telegram.deleteMessage(previousSentMessage.chatId, previousSentMessage.messageId);
-      } catch (e) {
-        console.error(getErrorMsg(e));
+    try {
+      const previousSentMessage = await SentWelcomeMessage.findOneAndDelete({ chatTitle })
+        .select('messageId chatId')
+        .lean();
+
+      if (previousSentMessage) {
+        try {
+          await ctx.telegram.deleteMessage(
+            previousSentMessage.chatId,
+            previousSentMessage.messageId,
+          );
+        } catch (e) {
+          console.error(getErrorMsg(e));
+        }
       }
-    }
 
-    await new SentWelcomeMessage(sentMessage).save();
-  } catch (e) {
-    console.error(`While deleting welcome message: ${getErrorMsg(e)}`);
+      await new SentWelcomeMessage(sentMessage).save();
+    } catch (e) {
+      console.error(`While deleting welcome message: ${getErrorMsg(e)}`);
+    }
   }
 };
 
