@@ -56,7 +56,7 @@ export const getChatEssentials = async (chatTitle: string): Promise<ChatEssentia
   }
   return {
     welcomeMessage: chatSettings.message,
-    footer: chatSettings.footer.message,
+    footer: chatSettings?.footer?.message ?? '',
     prevSentMessage: chatSettings.previousSentMessage,
   };
 };
