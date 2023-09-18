@@ -50,6 +50,7 @@ export type ChatEssentials = {
  * */
 export const getChatEssentials = async (chatTitle: string): Promise<ChatEssentials> => {
   const chatSettings = await ChatSettings.findOne({ chatTitle }).populate<FooterType>('footer');
+  console.log(chatSettings)
 
   if (!chatSettings) {
     throw new Error(`While getting welcome message for chat - ${chatTitle}`);

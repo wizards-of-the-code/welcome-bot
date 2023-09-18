@@ -4,6 +4,6 @@ export type Bot = Telegraf;
 export type BotContext = Context;
 
 export enum CollectionsEnum {
-  'FOOTER' = 'wb-chat-footer',
+  'FOOTER' = 'wb-chat-footers',
   'CHAT_SETTINGS' = 'wb-chat-settings',
 }
