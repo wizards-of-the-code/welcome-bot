@@ -1,7 +1,17 @@
 import { Schema } from 'mongoose';
-import { ChatSettingsType, FooterType } from './types';
+import { ObjectId } from 'mongodb';
 
-export const chatSettingsSchema = new Schema<ChatSettingsType>(
+export const footerSchema = new Schema(
+  {
+    message: {
+      required: true,
+      type: String,
+    },
+  },
+  { collection: 'footer' },
+);
+
+export const chatSettingsSchema = new Schema(
   {
     message: {
       type: String,
@@ -11,6 +21,7 @@ export const chatSettingsSchema = new Schema<ChatSettingsType>(
       type: String,
       required: true,
     },
+    footer: { type: ObjectId, ref: 'Footer', required: true },
     previousSentMessage: {
       messageId: {
         type: Number,
@@ -23,14 +34,4 @@ export const chatSettingsSchema = new Schema<ChatSettingsType>(
     },
   },
   { collection: 'chat-settings', timestamps: true },
-);
-
-export const footerSchema = new Schema<FooterType>(
-  {
-    message: {
-      required: true,
-      type: String,
-    },
-  },
-  { collection: 'footer' },
 );

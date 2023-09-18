@@ -1,6 +1,6 @@
 import { getErrorMsg } from './helpers';
 import { BotContext } from '../../contracts';
-import { SentWelcomeMessageType } from '../../schemas/types';
+import { FooterType, SentWelcomeMessageType } from '../../schemas/types';
 import { ChatSettings, Footer } from '../../schemas/models';
 
 /**
@@ -49,17 +49,14 @@ export type ChatEssentials = {
  * @return {Promise<ChatEssentials>}
  * */
 export const getChatEssentials = async (chatTitle: string): Promise<ChatEssentials> => {
-  const [footer, chatSettings] = await Promise.all([
-    Footer.findOne().select('message').lean(),
-    ChatSettings.findOne({ chatTitle }).select('message previousSentMessage').lean(),
-  ]);
+  const chatSettings = await ChatSettings.findOne({ chatTitle }).populate<FooterType>('footer');
 
-  if (!chatSettings || !footer) {
+  if (!chatSettings) {
     throw new Error(`While getting welcome message for chat - ${chatTitle}`);
   }
   return {
     welcomeMessage: chatSettings.message,
-    footer: footer.message,
+    footer: chatSettings.footer.message,
     prevSentMessage: chatSettings.previousSentMessage,
   };
 };
