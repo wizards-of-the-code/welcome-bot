@@ -12,7 +12,7 @@ export type FooterType = {
 
 export type ChatSettingsType = {
   _id: ObjectId;
-  previousSentMessage?: Omit<SentWelcomeMessageType, '_id'>;
+  previousSentMessage?:SentWelcomeMessageType;
   message: string;
   chatTitle: string;
   createdAt: Date;

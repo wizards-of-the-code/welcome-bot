@@ -7,7 +7,7 @@ import { ChatSettings, Footer } from '../../schemas/models';
  * Deletes previous sent message, add current sent message to db
  * @param {BotContext} ctx
  * @param {SentWelcomeMessageType} sentMessage
- * @param {SentWelcomeMessageType?} prevSentMessage
+ * @param {SentWelcomeMessageType} prevSentMessage
  * */
 export const handleDeletingPreviousMessage = async (
   ctx: BotContext,

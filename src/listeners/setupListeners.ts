@@ -9,7 +9,7 @@ import { Bot } from '../contracts';
 const setupListeners = (bot: Bot) => {
   onNewChatMembers(bot);
   onLeftChatMember(bot);
-  onNewMessage(bot);
+  // onNewMessage(bot);
 };
 
 export default setupListeners;
