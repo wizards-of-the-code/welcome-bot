@@ -26,11 +26,9 @@ export const chatSettingsSchema = new Schema(
     previousSentMessage: {
       messageId: {
         type: Number,
-        required: true,
       },
       chatId: {
         type: Number,
-        required: true,
       },
     },
   },

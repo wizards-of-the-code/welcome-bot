@@ -19,6 +19,7 @@ const onNewChatMembers = (bot: Bot) => {
           `${mention(newMemberName, newMember.id)} ${welcomeMessage}\n\n${footer}`,
           {
             parse_mode: 'MarkdownV2',
+            disable_web_page_preview: true
           },
         );
 
