@@ -9,9 +9,6 @@ import { Bot } from '../../contracts';
 const onNewChatMembers = (bot: Bot) => {
   bot.on(message('new_chat_members'), async (ctx) => {
     try {
-      // Deletes message that says that user has joined the group
-      await ctx.deleteMessage(ctx.message.message_id);
-
       const { chat } = ctx;
       if ('title' in chat) {
         const { welcomeMessage, footer, prevSentMessage } = await getChatEssentials(chat.title);
@@ -34,6 +31,9 @@ const onNewChatMembers = (bot: Bot) => {
           prevSentMessage,
         );
       }
+
+      // Deletes message that says that user has joined the group
+      await ctx.deleteMessage(ctx.message.message_id);
     } catch (e) {
       console.error(getErrorMsg(e));
     }
