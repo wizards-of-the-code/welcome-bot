@@ -1,6 +1,6 @@
 import { message } from 'telegraf/filters';
 import { escapeTextForMarkdown2, getErrorMsg, mention } from '../helpers/helpers';
-import { getChatGreeting, handleDeletingPreviousMessage } from '../helpers/dbRequests';
+import { getChatEssentials, handleDeletingPreviousMessage } from '../helpers/dbRequests';
 import { Bot } from '../../contracts';
 
 /**
@@ -14,7 +14,7 @@ const onNewChatMembers = (bot: Bot) => {
 
       const { chat } = ctx;
       if ('title' in chat) {
-        const { welcomeMessage, footer } = await getChatGreeting(chat.title);
+        const { welcomeMessage, footer, prevSentMessage } = await getChatEssentials(chat.title);
         const newMember = ctx.message.new_chat_members[0];
         const newMemberName = escapeTextForMarkdown2(newMember.username ?? newMember.first_name);
 
@@ -25,11 +25,14 @@ const onNewChatMembers = (bot: Bot) => {
           },
         );
 
-        await handleDeletingPreviousMessage(ctx, {
-          messageId,
-          chatId: chat.id,
-          chatTitle: chat.title,
-        });
+        await handleDeletingPreviousMessage(
+          ctx,
+          {
+            messageId,
+            chatId: chat.id,
+          },
+          prevSentMessage,
+        );
       }
     } catch (e) {
       console.error(getErrorMsg(e));

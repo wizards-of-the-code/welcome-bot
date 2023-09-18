@@ -1,21 +1,6 @@
 import { escapers } from '@telegraf/entity';
 
 /**
- * Checks whether particular hours have passed from timestamp
- * @param {number} timestamp
- * @param {number} passedHours
- * @return {boolean}
- * */
-export const checkPassedHours = (timestamp: number, passedHours: number): boolean => {
-  const now = Date.now();
-  // Calculate the time difference in milliseconds
-  const timeDifference = now - timestamp;
-  // Convert the time difference from milliseconds to hours
-  const hoursDifference = timeDifference / (1000 * 60 * 60);
-  return hoursDifference > passedHours;
-};
-
-/**
  * Takes error and returns error message
  * @param err
  * @return {string} Error message
