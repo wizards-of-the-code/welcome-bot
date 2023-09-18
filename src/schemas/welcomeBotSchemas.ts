@@ -1,5 +1,6 @@
 import { Schema } from 'mongoose';
 import { ObjectId } from 'mongodb';
+import { CollectionsEnum } from '../contracts';
 
 export const footerSchema = new Schema(
   {
@@ -8,7 +9,7 @@ export const footerSchema = new Schema(
       type: String,
     },
   },
-  { collection: 'footer' },
+  { collection: CollectionsEnum.FOOTER },
 );
 
 export const chatSettingsSchema = new Schema(
@@ -33,5 +34,5 @@ export const chatSettingsSchema = new Schema(
       },
     },
   },
-  { collection: 'chat-settings', timestamps: true },
+  { collection: CollectionsEnum.CHAT_SETTINGS, timestamps: true },
 );
