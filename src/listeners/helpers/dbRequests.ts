@@ -3,6 +3,7 @@ import { BotContext } from '../../contracts';
 import { FooterType, SentWelcomeMessageType } from '../../schemas/types';
 import { ChatSettings, Footer } from '../../schemas/models';
 import { defaultWelcomeMessage } from '../../constants';
+import logger from "../../logger/logger";
 
 /**
  * Deletes previous sent message, add current sent message to db
@@ -23,7 +24,7 @@ export const handleDeletingPreviousMessage = async (
         try {
           await ctx.telegram.deleteMessage(prevSentMessage.chatId, prevSentMessage.messageId);
         } catch (e) {
-          console.error(getErrorMsg(e));
+          logger.error(getErrorMsg(e));
         }
       }
 
@@ -34,7 +35,7 @@ export const handleDeletingPreviousMessage = async (
         },
       );
     } catch (e) {
-      console.error(`While deleting welcome message: ${getErrorMsg(e)}`);
+      logger.error(`While deleting welcome message: ${getErrorMsg(e)}`);
     }
   }
 };
