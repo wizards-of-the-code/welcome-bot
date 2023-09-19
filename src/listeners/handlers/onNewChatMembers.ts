@@ -13,11 +13,10 @@ const onNewChatMembers = (bot: Bot) => {
       if ('title' in chat) {
         const { welcomeMessage, footer, prevSentMessage } = await getChatEssentials(chat.title);
         // If it's a bot, we don't welcome it :)
-        if (ctx.from.is_bot) return;
-
         const newMember = ctx.message.new_chat_members[0];
-        const newMemberName = escapeForMarkdown2(newMember.username ?? newMember.first_name);
+        if (newMember.is_bot) return;
 
+        const newMemberName = escapeForMarkdown2(newMember.username ?? newMember.first_name);
         const { message_id: messageId } = await ctx.sendMessage(
           `${mention(newMemberName, newMember.id)} ${welcomeMessage}\n\n${footer}`,
           {
