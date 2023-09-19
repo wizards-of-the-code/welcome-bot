@@ -1,16 +1,19 @@
 import * as mongoose from 'mongoose';
-import { IConfigService } from '../config/ConfigService.interface';
+import config from '../config/ConfigService';
+import logger from '../logger/logger';
+import { getErrorMsg } from '../listeners/helpers/helpers';
 
-const connectToMongoose = async (configService: IConfigService) => {
-  const uri = `mongodb+srv://${configService.get('MONGO_USERNAME')}:${configService.get(
+const connectToMongoose = async () => {
+  const uri = `mongodb+srv://${config.get('MONGO_USERNAME')}:${config.get(
     'MONGO_PASSWORD',
-  )}@botdb.ixjj9ng.mongodb.net/${configService.get('MONGO_DB_NAME')}`;
+  )}@botdb.ixjj9ng.mongodb.net/${config.get('MONGO_DB_NAME')}`;
 
   try {
+    logger.info('Connecting to Mongoose');
     await mongoose.connect(uri);
-    console.log('Connected to Mongoose');
+    logger.info('Connected to Mongoose');
   } catch (error) {
-    console.error('Error connecting to Mongoose:', error);
+    logger.error('Error connecting to Mongoose:', getErrorMsg(error));
   }
 };
 

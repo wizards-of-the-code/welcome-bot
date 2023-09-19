@@ -1,11 +1,11 @@
-import { config, DotenvParseOutput } from 'dotenv';
+import { config as dotConfig, DotenvParseOutput } from 'dotenv';
 import { IConfigService } from './ConfigService.interface';
 
 class ConfigService implements IConfigService {
   private config: DotenvParseOutput;
 
   constructor() {
-    const { error, parsed } = config();
+    const { error, parsed } = dotConfig();
     if (error) {
       throw new Error('File .env not found.');
     }
@@ -26,4 +26,6 @@ class ConfigService implements IConfigService {
   }
 }
 
-export default ConfigService;
+const config = new ConfigService()
+
+export default config;

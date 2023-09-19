@@ -2,6 +2,7 @@ import { message } from 'telegraf/filters';
 import { escapeForMarkdown2, getErrorMsg, mention } from '../helpers/helpers';
 import { getChatEssentials, handleDeletingPreviousMessage } from '../helpers/dbRequests';
 import { Bot } from '../../contracts';
+import logger from "../../logger/logger";
 
 /**
  * @param {Bot} bot;
@@ -38,7 +39,7 @@ const onNewChatMembers = (bot: Bot) => {
       // Deletes message that says that user has joined the group
       await ctx.deleteMessage(ctx.message.message_id);
     } catch (e) {
-      console.error(getErrorMsg(e));
+      logger.error(getErrorMsg(e));
     }
   });
 };
