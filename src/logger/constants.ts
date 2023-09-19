@@ -9,11 +9,3 @@ export const loggerLevels = {
   warn: 'warn',
   info: 'info',
 };
-
-export const transportOptions = {
-  datePattern: 'MM-DD-YYYY-HH',
-  zippedArchive: true,
-  maxSize: '20m',
-  maxFiles: '14d',
-  dirname: 'logs',
-};
