@@ -1,6 +1,6 @@
-import { getErrorMsg } from './helpers';
-import { BotContext } from '../../contracts';
-import { FooterType, SentWelcomeMessageType } from '../../schemas/types';
+import { escapeForMarkdown2, getErrorMsg } from './helpers';
+import { BotContext, FooterTitles } from '../../contracts';
+import { ChatSettingsType, FooterType, SentWelcomeMessageType } from '../../schemas/types';
 import { ChatSettings, Footer } from '../../schemas/models';
 import { defaultWelcomeMessage } from '../../constants';
 
@@ -45,20 +45,32 @@ export type ChatEssentials = {
   prevSentMessage?: SentWelcomeMessageType;
 };
 /**
+ * Creates required collections in database;
+ * @param {string} chatTitle
+ * @return {Omit<ChatEssentials, 'prevSentMessage>}
+ */
+export const initializeNewChat = async (
+  chatTitle: string,
+): Promise<Omit<ChatEssentials, 'prevSentMessage'>> => {
+  const footer = await Footer.findOne({ title: FooterTitles.STANDARD }).lean();
+  const chatSettings = await new ChatSettings({
+    message: escapeForMarkdown2(defaultWelcomeMessage),
+    chatTitle,
+    footer,
+  }).save();
+  return { footer: footer?.message ?? '', welcomeMessage: chatSettings.message };
+};
+
+/**
  * Gets welcome message and footer
  * @param {string} chatTitle
  * @return {Promise<ChatEssentials>}
  * */
 export const getChatEssentials = async (chatTitle: string): Promise<ChatEssentials> => {
-  let chatSettings = await ChatSettings.findOne({ chatTitle }).populate<FooterType>('footer');
+  const chatSettings = await ChatSettings.findOne({ chatTitle }).populate<FooterType>('footer');
   if (!chatSettings) {
-    const footer = await Footer.findOne().select('_id message').lean();
-    chatSettings = await new ChatSettings({
-      message: defaultWelcomeMessage,
-      chatTitle,
-      footer: footer?._id,
-    }).save();
-    chatSettings.footer = footer as FooterType;
+    const { footer, welcomeMessage } = await initializeNewChat(chatTitle);
+    return { footer, welcomeMessage };
   }
   return {
     welcomeMessage: chatSettings.message,

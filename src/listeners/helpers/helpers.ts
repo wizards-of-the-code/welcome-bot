@@ -18,7 +18,7 @@ export const getErrorMsg = (err: unknown | Error): string => {
  * @param {string} text
  * @return {string}
  * */
-export const escapeTextForMarkdown2 = (text: string): string => escapers.MarkdownV2(text);
+export const escapeForMarkdown2 = (text: string): string => escapers.MarkdownV2(text);
 
 /**
  * Mentions user in Markdown2

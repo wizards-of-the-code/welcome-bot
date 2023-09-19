@@ -1,6 +1,6 @@
 import { Bot } from '../../contracts';
 import { message } from 'telegraf/filters';
-import { escapeTextForMarkdown2, getErrorMsg, mention } from '../helpers/helpers';
+import { escapeForMarkdown2, getErrorMsg, mention } from '../helpers/helpers';
 import { ChatSettings } from '../../schemas/models';
 import { FooterType } from '../../schemas/types';
 
@@ -19,7 +19,7 @@ const onNewMessage = (bot: Bot) => {
         if (chatSettings) {
           const user = ctx.message.from;
           const newMemberMention = mention(
-            escapeTextForMarkdown2(user.username ?? user.first_name),
+            escapeForMarkdown2(user.username ?? user.first_name),
             user.id,
           );
 

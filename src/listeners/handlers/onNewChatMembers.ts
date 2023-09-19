@@ -1,5 +1,5 @@
 import { message } from 'telegraf/filters';
-import { escapeTextForMarkdown2, getErrorMsg, mention } from '../helpers/helpers';
+import { escapeForMarkdown2, getErrorMsg, mention } from '../helpers/helpers';
 import { getChatEssentials, handleDeletingPreviousMessage } from '../helpers/dbRequests';
 import { Bot } from '../../contracts';
 
@@ -13,7 +13,7 @@ const onNewChatMembers = (bot: Bot) => {
       if ('title' in chat) {
         const { welcomeMessage, footer, prevSentMessage } = await getChatEssentials(chat.title);
         const newMember = ctx.message.new_chat_members[0];
-        const newMemberName = escapeTextForMarkdown2(newMember.username ?? newMember.first_name);
+        const newMemberName = escapeForMarkdown2(newMember.username ?? newMember.first_name);
 
         const { message_id: messageId } = await ctx.sendMessage(
           `${mention(newMemberName, newMember.id)} ${welcomeMessage}\n\n${footer}`,

@@ -7,3 +7,7 @@ export enum CollectionsEnum {
   'FOOTER' = 'wb-chat-footers',
   'CHAT_SETTINGS' = 'wb-chat-settings',
 }
+
+export enum FooterTitles {
+  'STANDARD' = 'Стандартный'
+}
