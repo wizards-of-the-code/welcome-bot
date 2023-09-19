@@ -12,6 +12,9 @@ const onNewChatMembers = (bot: Bot) => {
       const { chat } = ctx;
       if ('title' in chat) {
         const { welcomeMessage, footer, prevSentMessage } = await getChatEssentials(chat.title);
+        // If it's a bot, we don't welcome it :)
+        if (ctx.from.is_bot) return;
+
         const newMember = ctx.message.new_chat_members[0];
         const newMemberName = escapeForMarkdown2(newMember.username ?? newMember.first_name);
 
