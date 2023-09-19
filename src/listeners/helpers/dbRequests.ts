@@ -1,6 +1,6 @@
 import { escapeForMarkdown2, getErrorMsg } from './helpers';
 import { BotContext, FooterTitles } from '../../contracts';
-import { ChatSettingsType, FooterType, SentWelcomeMessageType } from '../../schemas/types';
+import { FooterType, SentWelcomeMessageType } from '../../schemas/types';
 import { ChatSettings, Footer } from '../../schemas/models';
 import { defaultWelcomeMessage } from '../../constants';
 import logger from "../../logger/logger";
@@ -11,23 +11,21 @@ import logger from "../../logger/logger";
  * @param {SentWelcomeMessageType} sentMessage
  * @param {SentWelcomeMessageType} prevSentMessage
  * */
-export const handleDeletingPreviousMessage = async (
+export const deletePreviousSentMessage = async (
   ctx: BotContext,
   sentMessage: SentWelcomeMessageType,
   prevSentMessage?: SentWelcomeMessageType,
 ) => {
   if (ctx.chat && 'title' in ctx.chat) {
     const chatTitle = ctx.chat.title;
-
     try {
       if (prevSentMessage) {
         try {
           await ctx.telegram.deleteMessage(prevSentMessage.chatId, prevSentMessage.messageId);
         } catch (e) {
-          logger.error(getErrorMsg(e));
+          logger.error(`While deleting previous sent message: ${getErrorMsg(e)}`);
         }
       }
-
       await ChatSettings.updateOne(
         { chatTitle },
         {
@@ -35,7 +33,7 @@ export const handleDeletingPreviousMessage = async (
         },
       );
     } catch (e) {
-      logger.error(`While deleting welcome message: ${getErrorMsg(e)}`);
+      logger.error(`In handleDeletingPreviousMessage: ${getErrorMsg(e)}`);
     }
   }
 };
