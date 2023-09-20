@@ -4,7 +4,7 @@ import { Telegraf } from 'telegraf';
 import { getErrorMsg } from './listeners/helpers/helpers';
 import config from './config/ConfigService';
 import logger from './logger/logger';
-import setupCommands from "./commands/setupCommands";
+import setupCommands from './commands/setupCommands';
 
 const main = async () => {
   await connectToMongoose();

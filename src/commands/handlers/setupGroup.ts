@@ -20,7 +20,7 @@ const setupGroup = async (ctx: BotContext) => {
   }
 
   if (!chatSettings) {
-    logger.info(`Bot is setup for chat ${chat.title}`);
+    logger.info(`Bot is setup && enabled for ${chat.title}`);
     await setupChatSettings({
       chatTitle: chat.title,
       chatId: chat.id,
@@ -30,7 +30,7 @@ const setupGroup = async (ctx: BotContext) => {
       creator: { id: creator.user.id, username: creator.user.username },
     });
   } else if (chatSettings) {
-    logger.info(`Bot is enabled for chat ${chatSettings.chatTitle}`);
+    logger.info(`Bot is enabled chat ${chatSettings.chatTitle}`);
     await chatSettings.updateOne({ botEnabled: true });
   }
 };

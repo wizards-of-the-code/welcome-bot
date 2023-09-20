@@ -10,7 +10,7 @@ export type SetupChatSettingsParams = {
   chatType: string;
   administrators: number[];
   creator: CreatorType;
-  botEnabled?: boolean
+  botEnabled?: boolean;
 };
 
 /**
@@ -23,7 +23,7 @@ export const setupChatSettings = async ({
   chatType,
   administrators,
   creator,
-  botEnabled = false
+  botEnabled = false,
 }: SetupChatSettingsParams) => {
   const footer = (await Footer.findOne({ title: FooterTitles.STANDARD }).lean()) as FooterType;
 
@@ -39,6 +39,6 @@ export const setupChatSettings = async ({
     administrators,
     creator,
     footer,
-    botEnabled
+    botEnabled,
   }).save();
 };

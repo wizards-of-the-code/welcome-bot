@@ -11,13 +11,13 @@ const stopGroup = async (ctx: BotContext) => {
   if (
     !chatSettings ||
     !chatSettings.botEnabled ||
-    chatSettings.chatType !== 'private' ||
+    chatSettings.chatType === 'private' ||
     ctx.from.id !== chatSettings.creator.id
   ) {
     return;
   }
 
-  logger.info(`Bot is disabled for chat ${chatSettings.chatTitle}`);
+  logger.info(`Bot is disabled for ${chatSettings.chatTitle}`);
   await chatSettings.updateOne({ botEnabled: false });
 };
 

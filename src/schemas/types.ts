@@ -13,7 +13,7 @@ export type FooterType = {
 export type CreatorType = {
   id: number;
   username: string;
-}
+};
 
 export type ChatSettingsType = {
   _id: ObjectId;
