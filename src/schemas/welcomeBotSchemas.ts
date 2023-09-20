@@ -53,7 +53,18 @@ export const chatSettingsSchema = new Schema<ChatSettingsType>(
       type: Number,
       required: true,
     },
-    footer: { type: ObjectId, ref: 'Footer', required: true },
+    chatType: {
+      type: String,
+      required: true,
+    },
+    administrators: {
+      type: [String],
+      default: [],
+    },
+    botEnabled: {
+      type: Boolean,
+      default: false,
+    },
     previousSentMessage: {
       messageId: {
         type: Number,
@@ -62,6 +73,7 @@ export const chatSettingsSchema = new Schema<ChatSettingsType>(
         type: Number,
       },
     },
+    footer: { type: ObjectId, ref: 'Footer', required: true },
   },
   { collection: CollectionsEnum.CHAT_SETTINGS, timestamps: true },
 );

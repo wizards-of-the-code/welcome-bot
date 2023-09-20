@@ -10,5 +10,5 @@ export enum CollectionsEnum {
 }
 
 export enum FooterTitles {
-  'STANDARD' = 'Стандартный'
+  'STANDARD' = 'Стандартный',
 }

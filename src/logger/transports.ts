@@ -3,7 +3,7 @@ import winston from 'winston';
 export const defaultTransportOptions = {
   datePattern: 'MM-DD-YYYY-HH',
   zippedArchive: true,
-  maxSize: '5m',
+  maxSize: '15m',
   maxFiles: '14d',
   dirname: 'logs',
 };

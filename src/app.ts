@@ -14,8 +14,12 @@ const main = async () => {
   logger.info('Bot is launched');
 
   bot.catch((e) => {
-    logger.error(getErrorMsg(e))
+    logger.error(getErrorMsg(e));
   });
+
+  // Enable graceful stop
+  process.once('SIGINT', () => bot.stop('SIGINT'));
+  process.once('SIGTERM', () => bot.stop('SIGTERM'));
 };
 
 main();

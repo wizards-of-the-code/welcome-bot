@@ -1,7 +1,7 @@
 import { message } from 'telegraf/filters';
 import { Bot } from '../../contracts';
-import logger from "../../logger/logger";
-import {getErrorMsg} from "../helpers/helpers";
+import logger from '../../logger/logger';
+import { getErrorMsg } from '../helpers/helpers';
 
 /**
  * @param {TelegramBot} bot;

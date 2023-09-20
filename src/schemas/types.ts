@@ -15,8 +15,11 @@ export type ChatSettingsType = {
   message: string;
   chatTitle: string;
   chatId: number;
-  footer: FooterType;
+  administrators: string[];
+  chatType: string;
+  botEnabled: boolean;
   previousSentMessage?: SentWelcomeMessageType;
+  footer: FooterType;
   createdAt: Date;
   updatedAt: Date;
 };
@@ -29,4 +32,4 @@ export type MigratedChatDataType = {
   username?: string;
   title?: string;
   invite_link?: string;
-}
+};

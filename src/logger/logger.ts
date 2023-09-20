@@ -2,7 +2,7 @@ import winston from 'winston';
 import 'winston-daily-rotate-file';
 import config from '../config/ConfigService';
 import { loggerColors } from './constants';
-import { defaultTransport } from "./transports";
+import { defaultTransport } from './transports';
 
 const { combine, timestamp, printf } = winston.format;
 

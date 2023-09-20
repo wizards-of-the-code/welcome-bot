@@ -15,6 +15,7 @@
   "author": "",
   "license": "ISC",
   "devDependencies": {
+    "@telegraf/types": "^6.8.1",
     "@types/dotenv": "^8.2.0",
     "@types/node": "^20.4.6",
     "@typescript-eslint/eslint-plugin": "^6.0.0",

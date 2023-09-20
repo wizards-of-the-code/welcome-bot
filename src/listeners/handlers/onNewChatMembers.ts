@@ -1,6 +1,6 @@
 import { message } from 'telegraf/filters';
 import { escapeForMarkdown2, getErrorMsg, customMention } from '../helpers/helpers';
-import { getChatEssentials, deletePreviousSentMessage } from '../helpers/dbRequests';
+import { getChatSettings, deletePreviousSentMessage } from '../helpers/dbRequests';
 import { Bot } from '../../contracts';
 import logger from '../../logger/logger';
 
@@ -13,18 +13,18 @@ const onNewChatMembers = (bot: Bot) => {
       const { chat } = ctx;
       if ('title' in chat) {
         logger.info(`Handle "new_chat_members" event for chat: ${chat.title}`);
-        const { welcomeMessage, footer, prevSentMessage } = await getChatEssentials(
-          chat.id,
-          chat.title,
-        );
+        const chatSettings = await getChatSettings(chat.id, chat.title, chat.type);
 
-        // If it's a bot, we don't welcome it :)
+        if (!chatSettings.botEnabled) return;
+
         const newMember = ctx.message.new_chat_members[0];
         if (newMember.is_bot) return;
 
         const newMemberName = escapeForMarkdown2(newMember.username ?? newMember.first_name);
         const { message_id: messageId } = await ctx.reply(
-          `${customMention(newMemberName, newMember.id)}\n${welcomeMessage}\n\n${footer}`,
+          `${customMention(newMemberName, newMember.id)}\n${chatSettings.message}\n\n${
+            chatSettings.footer.message
+          }`,
           {
             parse_mode: 'MarkdownV2',
             disable_web_page_preview: true,
@@ -36,7 +36,7 @@ const onNewChatMembers = (bot: Bot) => {
             messageId,
             chatId: chat.id,
           },
-          prevSentMessage,
+          chatSettings.previousSentMessage,
         );
       }
 

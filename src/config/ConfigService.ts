@@ -26,6 +26,6 @@ class ConfigService implements IConfigService {
   }
 }
 
-const config = new ConfigService()
+const config = new ConfigService();
 
 export default config;
