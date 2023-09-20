@@ -1,9 +1,9 @@
 import { escapeForMarkdown2, getErrorMsg } from './helpers';
 import { BotContext, FooterTitles } from '../../contracts';
 import { FooterType, SentWelcomeMessageType } from '../../schemas/types';
-import { ChatSettings, Footer } from '../../schemas/models';
+import { ChatSettings, Footer, MigratedChatMessages } from '../../schemas/models';
 import { defaultWelcomeMessage } from '../../constants';
-import logger from "../../logger/logger";
+import logger from '../../logger/logger';
 
 /**
  * Deletes previous sent message, add current sent message to db
@@ -45,15 +45,20 @@ export type ChatEssentials = {
 };
 /**
  * Creates required collections in database;
- * @param {string} chatTitle
+ * @param {number} chatId
  * @return {Omit<ChatEssentials, 'prevSentMessage>}
  */
 export const initializeNewChat = async (
+  chatId: number,
   chatTitle: string,
 ): Promise<Omit<ChatEssentials, 'prevSentMessage'>> => {
   const footer = await Footer.findOne({ title: FooterTitles.STANDARD }).lean();
+  const migratedData = await MigratedChatMessages.findOne({ telegram_id: chatId })
+    .select('wm')
+    .lean();
   const chatSettings = await new ChatSettings({
-    message: escapeForMarkdown2(defaultWelcomeMessage),
+    message: migratedData ? migratedData.wm : escapeForMarkdown2(defaultWelcomeMessage),
+    chatId,
     chatTitle,
     footer,
   }).save();
@@ -62,13 +67,16 @@ export const initializeNewChat = async (
 
 /**
  * Gets welcome message and footer
- * @param {string} chatTitle
+ * @param {string} chatId
  * @return {Promise<ChatEssentials>}
  * */
-export const getChatEssentials = async (chatTitle: string): Promise<ChatEssentials> => {
-  const chatSettings = await ChatSettings.findOne({ chatTitle }).populate<FooterType>('footer');
+export const getChatEssentials = async (
+  chatId: number,
+  chatTitle: string,
+): Promise<ChatEssentials> => {
+  const chatSettings = await ChatSettings.findOne({ chatId }).populate<FooterType>('footer');
   if (!chatSettings) {
-    const { footer, welcomeMessage } = await initializeNewChat(chatTitle);
+    const { footer, welcomeMessage } = await initializeNewChat(chatId, chatTitle);
     return { footer, welcomeMessage };
   }
   return {

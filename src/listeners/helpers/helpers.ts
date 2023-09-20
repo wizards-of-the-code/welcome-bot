@@ -26,5 +26,14 @@ export const escapeForMarkdown2 = (text: string): string => escapers.MarkdownV2(
  * @param {number} id
  * @return {string}
  */
-export const mention = (username: string, id: number): string =>
+export const customMention = (username: string, id: number): string =>
   `[@${username}](tg://user?id=${id})`;
+
+/**
+ * Adds backslash before special chars
+ * @example Abc_df, -> Abc\_df\,
+ * @param {string} text
+ * @return {string}
+ * */
+export const addBackslashBeforeSpecialChars = (text: string): string =>
+  text.replace(/[^A-ZА-Я0-9]/gi, '\\$&');
