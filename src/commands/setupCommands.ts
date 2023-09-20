@@ -1,10 +1,16 @@
 import { Bot } from '../contracts';
-import setupChat from './handlers/setupChat';
-import stopChat from './handlers/stopChat';
+import { getErrorMsg } from '../listeners/helpers/helpers';
+import commands from './commands';
+import logger from '../logger/logger';
+import commandHandler from './handlers/commandHandler';
 
-const setupCommands = (bot: Bot) => {
-  bot.command('setupChat', (ctx) => setupChat(ctx));
-  bot.command('stopChat', (ctx) => stopChat(ctx));
+const setupCommands = async (bot: Bot) => {
+  try {
+    await bot.telegram.setMyCommands(commands);
+    commands.forEach(({ command }) => bot.command(command, commandHandler[command]));
+  } catch (e) {
+    logger.error(`In setup commands - ${getErrorMsg(e)}`);
+  }
 };
 
 export default setupCommands;

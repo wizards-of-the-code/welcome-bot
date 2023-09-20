@@ -10,14 +10,20 @@ export type FooterType = {
   message: string;
 };
 
+export type CreatorType = {
+  id: number;
+  username: string;
+}
+
 export type ChatSettingsType = {
   _id: ObjectId;
   message: string;
   chatTitle: string;
   chatId: number;
-  administrators: string[];
   chatType: string;
   botEnabled: boolean;
+  administrators: number[];
+  creator: CreatorType;
   previousSentMessage?: SentWelcomeMessageType;
   footer: FooterType;
   createdAt: Date;

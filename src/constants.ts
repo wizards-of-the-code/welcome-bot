@@ -1,1 +1,1 @@
-export const defaultWelcomeMessage = 'Привет в сообщество айтишников!';
+export const defaultWelcomeMessage = 'Привет!';

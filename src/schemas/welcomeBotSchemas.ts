@@ -58,12 +58,16 @@ export const chatSettingsSchema = new Schema<ChatSettingsType>(
       required: true,
     },
     administrators: {
-      type: [String],
+      type: [Number],
       default: [],
     },
     botEnabled: {
       type: Boolean,
       default: false,
+    },
+    creator: {
+      id: { type: Number, required: true },
+      username: { type: String, required: true },
     },
     previousSentMessage: {
       messageId: {

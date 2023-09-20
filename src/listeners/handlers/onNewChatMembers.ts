@@ -13,7 +13,7 @@ const onNewChatMembers = (bot: Bot) => {
       const { chat } = ctx;
       if ('title' in chat) {
         logger.info(`Handle "new_chat_members" event for chat: ${chat.title}`);
-        const chatSettings = await getChatSettings(chat.id, chat.title, chat.type);
+        const chatSettings = await getChatSettings(chat.id, chat.title);
 
         if (!chatSettings.botEnabled) return;
 

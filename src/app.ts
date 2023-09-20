@@ -4,12 +4,14 @@ import { Telegraf } from 'telegraf';
 import { getErrorMsg } from './listeners/helpers/helpers';
 import config from './config/ConfigService';
 import logger from './logger/logger';
+import setupCommands from "./commands/setupCommands";
 
 const main = async () => {
   await connectToMongoose();
   const bot = new Telegraf(config.get('BOT_TOKEN'));
   setupListeners(bot);
 
+  await setupCommands(bot);
   bot.launch();
   logger.info('Bot is launched');
 
