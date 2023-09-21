@@ -1,6 +1,6 @@
 import { message } from 'telegraf/filters';
 import { escapeForMarkdown2, getErrorMsg, customMention } from '../helpers/helpers';
-import { getChatSettings, deletePreviousSentMessage } from '../helpers/dbRequests';
+import { getChatSettingsWithFooter, deletePreviousSentMessage } from '../helpers/dbRequests';
 import { Bot } from '../../contracts';
 import logger from '../../logger/logger';
 
@@ -13,9 +13,12 @@ const onNewChatMembers = (bot: Bot) => {
       const { chat } = ctx;
       if ('title' in chat) {
         logger.info(`Handle "new_chat_members" event for chat: ${chat.title}`);
-        const chatSettings = await getChatSettings(chat.id, chat.title);
+        const chatSettings = await getChatSettingsWithFooter(chat.id);
 
-        if (!chatSettings.botEnabled) return;
+        if (!chatSettings?.botEnabled) return;
+
+        // Deletes message that says that user has joined the chat
+        await ctx.deleteMessage(ctx.message.message_id);
 
         const newMember = ctx.message.new_chat_members[0];
         if (newMember.is_bot) return;
@@ -30,6 +33,7 @@ const onNewChatMembers = (bot: Bot) => {
             disable_web_page_preview: true,
           },
         );
+
         await deletePreviousSentMessage(
           ctx,
           {
@@ -39,9 +43,6 @@ const onNewChatMembers = (bot: Bot) => {
           chatSettings.previousSentMessage,
         );
       }
-
-      // Deletes message that says that user has joined the chat
-      await ctx.deleteMessage(ctx.message.message_id);
     } catch (e) {
       logger.error(`While handling "new_chat_members" event: ${getErrorMsg(e)}`);
     }

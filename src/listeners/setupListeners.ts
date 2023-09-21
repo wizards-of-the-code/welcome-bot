@@ -4,7 +4,7 @@ import onNewMessage from './handlers/onNewMessage';
 import { Bot } from '../contracts';
 
 /**
- * @param {TelegramBot} bot;
+ * @param bot
  */
 const setupListeners = (bot: Bot) => {
   onNewChatMembers(bot);

@@ -1,6 +1,7 @@
 import { BotContext } from '../../contracts';
 import { ChatSettingsType, FooterType, SentWelcomeMessageType } from '../../schemas/types';
 import { ChatSettings } from '../../schemas/models';
+import logger from '../../logger/logger';
 
 /**
  * Deletes previous sent message, add current sent message to db
@@ -13,32 +14,30 @@ export const deletePreviousSentMessage = async (
   sentMessage: SentWelcomeMessageType,
   prevSentMessage?: SentWelcomeMessageType,
 ) => {
-  if (ctx.chat && 'title' in ctx.chat) {
-    const chatTitle = ctx.chat.title;
-    if (prevSentMessage) {
-      await ctx.telegram.deleteMessage(prevSentMessage.chatId, prevSentMessage.messageId);
-    }
-
-    await ChatSettings.updateOne(
-      { chatTitle },
-      {
-        previousSentMessage: sentMessage,
-      },
-    );
+  if (prevSentMessage?.messageId && prevSentMessage.chatId) {
+    await ctx.telegram.deleteMessage(prevSentMessage.chatId, prevSentMessage.messageId);
   }
+
+  logger.info(`Updating "previousSentMessage" for chat: ${sentMessage.chatId}`);
+  await ChatSettings.updateOne(
+    { chatId: sentMessage.chatId },
+    {
+      previousSentMessage: sentMessage,
+    },
+  );
 };
 
 /**
  * Gets chat settings
  * @param {number} chatId
- * @param {string} chatTitle
  * @return {Promise<ChatSettingsType>}
  * */
-export const getChatSettings = async (
+export const getChatSettingsWithFooter = async (
   chatId: number,
-  chatTitle: string,
-): Promise<ChatSettingsType> => {
-  const chatSettings = await ChatSettings.findOne({ chatId }).populate<FooterType>('footer');
-  if (!chatSettings) throw new Error(`Chat settings for chat ${chatTitle} not found`);
+): Promise<ChatSettingsType | null> => {
+  logger.info('Requesting chat settings & populating footer');
+  const chatSettings = await ChatSettings.findOne({ chatId: chatId })
+    .populate<FooterType>('footer')
+    .exec();
   return chatSettings;
 };

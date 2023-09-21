@@ -19,7 +19,11 @@ export const collectTags = async (ctx: MessageUpdate) => {
   if (profile) {
     logger.info(`Profile of user - ${from.username || from.first_name} is updated`);
     const jointTags = new Set([...profile.tags, ...tags]);
-    await profile.updateOne({ tags: [...jointTags] });
+    await profile.updateOne({
+      tags: [...jointTags],
+      username: from.username,
+      firstname: from.first_name,
+    });
   } else {
     logger.info(`Profile for user - ${from.username || from.first_name} is created`);
     await new Profile({

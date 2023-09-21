@@ -2,10 +2,11 @@ import { BotContext } from '../../contracts';
 import { ChatSettings } from '../../schemas/models';
 import logger from '../../logger/logger';
 import { setupChatSettings } from '../helpers/dbRequests';
+import { getErrorMsg } from '../../listeners/helpers/helpers';
 
 const setupGroup = async (ctx: BotContext) => {
   const { chat, from } = ctx;
-  if (!chat || !from || !('title' in chat)) return;
+  if (!chat || !from || !('title' in chat) || !ctx.message) return;
 
   const chatSettings = await ChatSettings.findOne({ chatId: chat.id });
 
@@ -32,6 +33,12 @@ const setupGroup = async (ctx: BotContext) => {
   } else if (chatSettings) {
     logger.info(`Bot is enabled chat ${chatSettings.chatTitle}`);
     await chatSettings.updateOne({ botEnabled: true });
+  }
+  try {
+    await ctx.deleteMessage(ctx.message.message_id);
+    await ctx.reply('Bot is activated');
+  } catch (e) {
+    logger.error(getErrorMsg(e));
   }
 };
 

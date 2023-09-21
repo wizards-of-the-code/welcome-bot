@@ -1,7 +1,14 @@
 import { Schema } from 'mongoose';
 import { ObjectId } from 'mongodb';
 import { CollectionsEnum } from '../contracts';
-import { ChatSettingsType, FooterType, MigratedChatDataType, ProfileType } from './types';
+import {
+  ChatSettingsType,
+  FooterType,
+  MigratedChatDataType,
+  OwnerMessageType,
+  ProfileType,
+} from './types';
+import configService from '../config/ConfigService';
 
 export const footerSchema = new Schema<FooterType>(
   {
@@ -82,26 +89,44 @@ export const chatSettingsSchema = new Schema<ChatSettingsType>(
   { collection: CollectionsEnum.CHAT_SETTINGS, timestamps: true },
 );
 
-export const profileSchema = new Schema<ProfileType>({
-  chatId: {
-    type: Number,
-    required: true,
+export const profileSchema = new Schema<ProfileType>(
+  {
+    chatId: {
+      type: Number,
+      required: true,
+    },
+    userId: {
+      type: Number,
+      required: true,
+    },
+    username: {
+      type: String,
+      required: false,
+    },
+    firstname: {
+      type: String,
+      required: true,
+    },
+    tags: {
+      type: [String],
+      required: true,
+      default: [],
+    },
   },
-  userId: {
-    type: Number,
-    required: true,
+  { collection: CollectionsEnum.PROFILE },
+);
+
+export const ownerMessageSchema = new Schema<OwnerMessageType>(
+  {
+    message: {
+      required: true,
+      type: String,
+    },
+    ownerUsername: {
+      required: true,
+      type: String,
+      default: configService.get('OWNER_USERNAME'),
+    },
   },
-  username: {
-    type: String,
-    required: false,
-  },
-  firstname: {
-    type: String,
-    required: true,
-  },
-  tags: {
-    type: [String],
-    required: true,
-    default: []
-  },
-}, { collection: CollectionsEnum.PROFILE });
+  { collection: CollectionsEnum.OWNER_MESSAGE, timestamps: true },
+);

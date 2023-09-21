@@ -47,4 +47,12 @@ export type ProfileType = {
   firstname: string;
   tags: string[];
   userId: number;
-}
+};
+
+export type OwnerMessageType = {
+  _id: ObjectId;
+  message: string;
+  ownerUsername: string;
+  createdAt: Date;
+  updatedAt: Date;
+};
