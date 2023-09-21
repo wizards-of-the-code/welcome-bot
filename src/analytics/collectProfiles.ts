@@ -1,11 +1,14 @@
 import { MessageUpdate } from '../contracts';
-import { Profile } from '../schemas/models';
+import { ChatSettings, Profile } from '../schemas/models';
 import logger from '../logger/logger';
 import { getAllTags } from './helpers';
 
 export const collectTags = async (ctx: MessageUpdate) => {
   if (!ctx.from || !ctx.message || !ctx.chat || ctx.chat.type === 'private') return;
   const { message, from, chat } = ctx;
+
+  const chatSettings = await ChatSettings.findOne({ chatId: chat.id }).select('chatid').lean();
+  if (!chatSettings || !chatSettings.botEnabled) return;
 
   const profile = await Profile.findOne({ userId: from.id });
 
