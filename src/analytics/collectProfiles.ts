@@ -6,8 +6,9 @@ import { getAllTags } from './helpers';
 export const collectTags = async (ctx: MessageUpdate) => {
   if (!ctx.from || !ctx.message || !ctx.chat || ctx.chat.type === 'private') return;
   const { message, from, chat } = ctx;
-
-  const chatSettings = await ChatSettings.findOne({ chatId: chat.id }).select('chatid').lean();
+  const chatSettings = await ChatSettings.findOne({ chatId: chat.id })
+    .select('chatId botEnabled')
+    .lean();
   if (!chatSettings || !chatSettings.botEnabled) return;
 
   const profile = await Profile.findOne({ userId: from.id });

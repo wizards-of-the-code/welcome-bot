@@ -10,7 +10,6 @@ const main = async () => {
   await connectToMongoose();
   const bot = new Telegraf(config.get('BOT_TOKEN'));
   setupListeners(bot);
-
   await setupCommands(bot);
   bot.launch();
   logger.info('Bot is launched');

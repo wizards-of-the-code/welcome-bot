@@ -8,9 +8,10 @@ import { collectTags } from '../../analytics/collectProfiles';
  * @param bot
  */
 const onNewMessage = (bot: Bot) => {
-  bot.on(message('text'), async (ctx) => {
+  bot.on(message('text'), async (ctx, next) => {
     try {
       await collectTags(ctx);
+      await next();
     } catch (e) {
       logger.error(getErrorMsg(e));
     }
