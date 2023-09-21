@@ -1,11 +1,11 @@
 export const loggerColors = {
   error: 'red',
-  warn: 'brown',
+  warn: 'yellow',
   info: 'blue',
 };
 
 export const loggerLevels = {
   error: 'error',
-  warn: 'warn',
+  warn: 'yellow',
   info: 'info',
 };
