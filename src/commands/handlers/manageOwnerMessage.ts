@@ -13,7 +13,7 @@ export enum ManageOwnerMessage {
 const buttons: InlineKeyboardButton.CallbackButton[][] = [
   [Markup.button.callback('во все группы', ManageOwnerMessage.SEND)],
   [Markup.button.callback('с закреплением', ManageOwnerMessage.PIN)],
-  // [Markup.button.callback('с уведомлением', ManageOwnerMessage.NOTIFY)],
+  [Markup.button.callback('с уведомлением', ManageOwnerMessage.NOTIFY)],
 ];
 export const manageOwnerMessage = async (ctx: BotContext) => {
   if (!ctx.from || !ctx.from.username || ctx.chat?.type !== 'private') return;

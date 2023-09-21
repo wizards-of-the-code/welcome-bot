@@ -27,7 +27,32 @@ export const sendOwnerMessage = (bot: Bot) => {
 
     const chats = await getChatsWhereBotEnabled();
     await Promise.all(
-      chats.map((chatId) => bot.telegram.sendMessage(chatId, message?.message as string)),
+      chats.map((chatId) => bot.telegram.sendMessage(chatId, message?.message as string), {
+        disable_notification: true,
+      }),
+    );
+    await next();
+  });
+};
+
+/**
+ * Sends owner message to all chats where bot is enabled & notification is enabled
+ * @param bot
+ */
+export const notifyOwnerMessage = (bot: Bot) => {
+  bot.action(ManageOwnerMessage.NOTIFY, async (ctx, next) => {
+    await ctx.deleteMessage();
+    const message = await OwnerMessage.findOne({
+      ownerUsername: configService.get('OWNER_USERNAME'),
+    })
+      .select('message')
+      .lean();
+
+    const chats = await getChatsWhereBotEnabled();
+    await Promise.all(
+      chats.map((chatId) => bot.telegram.sendMessage(chatId, message?.message as string), {
+        disable_notification: false,
+      }),
     );
     await next();
   });
@@ -49,9 +74,11 @@ export const pinOwnerMessage = (bot: Bot) => {
     const chats = await getChatsWhereBotEnabled();
     await Promise.all(
       chats.map((chatId) =>
-        bot.telegram
-          .sendMessage(chatId, message?.message as string)
-          .then((sentMessage) => bot.telegram.pinChatMessage(chatId, sentMessage.message_id)),
+        bot.telegram.sendMessage(chatId, message?.message as string).then((sentMessage) =>
+          bot.telegram.pinChatMessage(chatId, sentMessage.message_id, {
+            disable_notification: true,
+          }),
+        ),
       ),
     );
     await next();

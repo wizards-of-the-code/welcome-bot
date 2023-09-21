@@ -2,7 +2,11 @@ import { Bot } from '../contracts';
 import { handleOwnerMessageCancel, handleOwnerMessageSave } from './handlers/setupOwnerMessage';
 import logger from '../logger/logger';
 import { getErrorMsg } from '../listeners/helpers/helpers';
-import { pinOwnerMessage, sendOwnerMessage } from './handlers/manageOwnerMessage';
+import {
+  notifyOwnerMessage,
+  pinOwnerMessage,
+  sendOwnerMessage,
+} from './handlers/manageOwnerMessage';
 
 /**
  * Setups actions
@@ -15,6 +19,7 @@ export const setupActions = (bot: Bot) => {
     handleOwnerMessageCancel(bot);
     sendOwnerMessage(bot);
     pinOwnerMessage(bot);
+    notifyOwnerMessage(bot);
   } catch (e) {
     logger.error(getErrorMsg(e));
   }
