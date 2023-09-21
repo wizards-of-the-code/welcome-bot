@@ -39,3 +39,12 @@ export type MigratedChatDataType = {
   title?: string;
   invite_link?: string;
 };
+
+export type ProfileType = {
+  _id: ObjectId;
+  chatId: number;
+  username?: string;
+  firstname: string;
+  tags: string[];
+  userId: number;
+}

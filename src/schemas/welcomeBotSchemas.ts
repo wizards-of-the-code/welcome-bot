@@ -1,7 +1,7 @@
 import { Schema } from 'mongoose';
 import { ObjectId } from 'mongodb';
 import { CollectionsEnum } from '../contracts';
-import { ChatSettingsType, FooterType, MigratedChatDataType } from './types';
+import { ChatSettingsType, FooterType, MigratedChatDataType, ProfileType } from './types';
 
 export const footerSchema = new Schema<FooterType>(
   {
@@ -81,3 +81,27 @@ export const chatSettingsSchema = new Schema<ChatSettingsType>(
   },
   { collection: CollectionsEnum.CHAT_SETTINGS, timestamps: true },
 );
+
+export const profileSchema = new Schema<ProfileType>({
+  chatId: {
+    type: Number,
+    required: true,
+  },
+  userId: {
+    type: Number,
+    required: true,
+  },
+  username: {
+    type: String,
+    required: false,
+  },
+  firstname: {
+    type: String,
+    required: true,
+  },
+  tags: {
+    type: [String],
+    required: true,
+    default: []
+  },
+}, { collection: CollectionsEnum.PROFILE });
