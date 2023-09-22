@@ -18,7 +18,7 @@ const stopGroup = async (ctx: BotContext) => {
   }
 
   logger.info(`Bot is disabled for ${chatSettings.chatTitle}`);
-  await chatSettings.updateOne({ botEnabled: false });
+  await chatSettings.updateOne({ chatId: chat.id }, { botEnabled: false });
 };
 
 export default stopGroup;

@@ -5,8 +5,8 @@ services:
     build: .
     volumes:
       - ${MEDIA_PATH}:${MEDIA_PATH}
-      - /logs/logs:${LOGS_PATH}
-      - /sessions/sessions:${SESSIONS_PATH}
+      - /logs:${LOGS_PATH}
+      - /sessions:${SESSIONS_PATH}
     command: node ./dist/app.js
     env_file:
       - .env

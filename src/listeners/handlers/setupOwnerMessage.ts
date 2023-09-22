@@ -1,6 +1,5 @@
 import { MessageUpdate } from '../../contracts';
 import config from '../../config/ConfigService';
-import commands from '../../commands/commands';
 
 export const setupOwnerMessage = async (ctx: MessageUpdate) => {
   if (!ctx.from || !ctx.message || !ctx.from.username || ctx.chat?.type !== 'private') return;

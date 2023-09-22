@@ -1,5 +1,6 @@
 import { Bot } from '../../contracts';
 import { OwnerMessage } from '../../schemas/models';
+import configService from '../../config/ConfigService';
 
 /**
  * Saves owner message to database & cleans database
@@ -11,7 +12,18 @@ export const handleOwnerMessageSave = (bot: Bot) => {
     ctx.reply(
       'Сообщение сохранено!\n\nОтправьте команду "\\owner_message", чтоб продолжить работу с сообщением...',
     );
-    await new OwnerMessage({ message: ctx.session.ownerMessage }).save();
+    const ownerMessage = await OwnerMessage.findOne({
+      ownerUsername: configService.get('OWNER_USERNAME'),
+    });
+
+    if (!ownerMessage) {
+      await new OwnerMessage({ message: ctx.session.ownerMessage }).save();
+    } else {
+      await ownerMessage.updateOne(
+        { ownerUsername: configService.get('OWNER_USERNAME') },
+        { message: ctx.session.ownerMessage },
+      );
+    }
     await next();
   });
 };
