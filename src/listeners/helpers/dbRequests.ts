@@ -14,14 +14,17 @@ export const deletePreviousSentMessage = async (
   sentMessage: SentWelcomeMessageType,
   prevSentMessage?: SentWelcomeMessageType,
 ) => {
+  logger.info(`sentMsg - ${JSON.stringify(sentMessage)}`);
+  logger.info(`prev - ${JSON.stringify(prevSentMessage)}`);
   if (prevSentMessage?.messageId && prevSentMessage.chatId) {
     await ctx.telegram.deleteMessage(prevSentMessage.chatId, prevSentMessage.messageId);
   }
 
   logger.info(`Updating "previousSentMessage" for chat: ${sentMessage.chatId}`);
-  await ChatSettings.updateOne({
+  const upd = await ChatSettings.updateOne({
     previousSentMessage: sentMessage,
-  });
+  }).exec();
+  logger.info(`upd - ${JSON.stringify(upd)}`);
 };
 
 /**

@@ -3,6 +3,7 @@ import { escapeForMarkdown2, getErrorMsg, customMention } from '../helpers/helpe
 import { getChatSettingsWithFooter, deletePreviousSentMessage } from '../helpers/dbRequests';
 import { Bot } from '../../contracts';
 import logger from '../../logger/logger';
+import { ChatSettings } from '../../schemas/models';
 
 /**
  * @param {Bot} bot;
@@ -15,7 +16,7 @@ const onNewChatMembers = (bot: Bot) => {
         logger.info(`Handle "new_chat_members" event for chat: ${chat.title}`);
         const chatSettings = await getChatSettingsWithFooter(chat.id);
 
-        if (!chatSettings?.botEnabled) return;
+        if (!chatSettings || !chatSettings?.botEnabled) return;
 
         // Deletes message that says that user has joined the chat
         await ctx.deleteMessage(ctx.message.message_id);
@@ -34,13 +35,25 @@ const onNewChatMembers = (bot: Bot) => {
           },
         );
 
-        await deletePreviousSentMessage(
-          ctx,
+        if (
+          chatSettings.previousSentMessage?.messageId &&
+          chatSettings.previousSentMessage.chatId
+        ) {
+          try {
+            await ctx.telegram.deleteMessage(
+              chatSettings.previousSentMessage.chatId,
+              chatSettings.previousSentMessage.messageId,
+            );
+          } catch (e) {
+            logger.info(`While deleting previous sent message ${getErrorMsg(e)}`);
+          }
+        }
+
+        await ChatSettings.updateOne(
+          { chatId: chat.id },
           {
-            messageId,
-            chatId: chat.id,
+            previousSentMessage: { messageId, chatId: chat.id },
           },
-          chatSettings.previousSentMessage,
         );
       }
     } catch (e) {
