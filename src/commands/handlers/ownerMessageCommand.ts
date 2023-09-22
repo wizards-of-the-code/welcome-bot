@@ -5,7 +5,7 @@ import { Command } from '../command.class';
 import configService from '../../config/ConfigService';
 import { CommandEnum } from '../types';
 import logger from '../../logger/logger';
-import { sendAndPingMessageToChats, sendMessageToChats } from '../helpers/sendMessage';
+import { sendAndPinMessageToChats, sendMessageToChats } from '../helpers/sendMessage';
 import { getErrorMsg } from '../../listeners/helpers/helpers';
 
 export enum OwnerMessageActions {
@@ -57,13 +57,12 @@ export class OwnerMessageCommand extends Command {
       });
 
       this.bot.action(OwnerMessageActions.SEND, async (ctx) => {
-        ctx.deleteMessage();
         const chats = await getChatsWhereBotEnabled();
+        logger.info(JSON.stringify(chats));
         await sendMessageToChats({ ctx, chats, message: ctx.session.ownerMessage });
       });
 
       this.bot.action(OwnerMessageActions.NOTIFY, async (ctx) => {
-        ctx.deleteMessage();
         const chats = await getChatsWhereBotEnabled();
         await sendMessageToChats({
           ctx,
@@ -74,9 +73,8 @@ export class OwnerMessageCommand extends Command {
       });
 
       this.bot.action(OwnerMessageActions.PIN, async (ctx) => {
-        ctx.deleteMessage();
         const chats = await getChatsWhereBotEnabled();
-        await sendAndPingMessageToChats({ ctx, chats, message: ctx.session.ownerMessage });
+        await sendAndPinMessageToChats({ ctx, chats, message: ctx.session.ownerMessage });
       });
     } catch (e) {
       logger.error(`In OwnerMessageCommand class ${getErrorMsg(e)}`);

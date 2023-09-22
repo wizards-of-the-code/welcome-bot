@@ -9,7 +9,7 @@ export const saveNewOwnerMessage = () => {
   bot.action(OwnerMessageActions.SAVE, async (ctx) => {
     ctx.deleteMessage();
     ctx.reply(
-      'Сообщение сохранено!\n\nОтправьте команду "\\owner_message", чтоб продолжить работу с сообщением...',
+      'Сообщение сохранено!\n\nОтправьте команду /owner_message", чтоб продолжить работу с сообщением...',
     );
     const ownerMessage = await OwnerMessage.findOne({
       ownerUsername: configService.get('OWNER_USERNAME'),

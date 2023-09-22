@@ -26,6 +26,7 @@ export class StopGroupCommand extends Command {
 
         logger.info(`Bot is disabled for ${chatSettings.chatTitle}`);
         await chatSettings.updateOne({ botEnabled: false });
+        await ctx.deleteMessage(ctx.message.message_id);
         await ctx.reply('Bot is disabled');
       });
     } catch (e) {

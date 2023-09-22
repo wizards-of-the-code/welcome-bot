@@ -11,13 +11,13 @@ export type SendMessageToChatsParams = Omit<SendMessageToChatParams, 'chatId'> &
   chats: number[];
 };
 
-export const sendMessageToChat = ({
+export const sendMessageToChat = async ({
   ctx,
   chatId,
   message,
   disableNotification,
 }: SendMessageToChatParams) =>
-  ctx.telegram.sendMessage(chatId, message, {
+  await ctx.telegram.sendMessage(chatId, message, {
     disable_notification: disableNotification,
   });
 
@@ -48,7 +48,7 @@ export const sendMessageToChats = async ({
  * Sends owner message to all chats where bot is enabled & pins the message
  * @param {SendMessageToChatsParams}
  */
-export const sendAndPingMessageToChats = async ({
+export const sendAndPinMessageToChats = async ({
   ctx,
   message,
   chats,
@@ -64,7 +64,7 @@ export const sendAndPingMessageToChats = async ({
         disableNotification,
       }).then((sentMessage) =>
         ctx.telegram.pinChatMessage(chatId, sentMessage.message_id, {
-          disable_notification: true,
+          disable_notification: disableNotification,
         }),
       ),
     ),

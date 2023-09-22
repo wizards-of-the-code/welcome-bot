@@ -4,6 +4,7 @@ import { cancelNewOwnerMessage, saveNewOwnerMessage } from './handler/newOwnerMe
 
 export const setupActions = () => {
   try {
+    logger.info('Set-upping actions');
     saveNewOwnerMessage();
     cancelNewOwnerMessage();
   } catch (e) {
