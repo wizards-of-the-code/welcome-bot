@@ -1,4 +1,3 @@
-import { Bot } from '../contracts';
 import { handleOwnerMessageCancel, handleOwnerMessageSave } from './handlers/setupOwnerMessage';
 import logger from '../logger/logger';
 import { getErrorMsg } from '../listeners/helpers/helpers';
@@ -7,12 +6,10 @@ import {
   pinOwnerMessage,
   sendOwnerMessage,
 } from './handlers/manageOwnerMessage';
+import getBot from "../setupBot";
 
-/**
- * Setups actions
- * @param bot
- */
-export const setupActions = (bot: Bot) => {
+export const setupActions = () => {
+  const bot = getBot();
   try {
     logger.info('Set-upping actions');
     handleOwnerMessageSave(bot);
