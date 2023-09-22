@@ -2,7 +2,7 @@ import { message } from 'telegraf/filters';
 import { Bot } from '../../contracts';
 import logger from '../../logger/logger';
 import { getErrorMsg } from '../helpers/helpers';
-import {getChatSettingsWithFooter} from "../helpers/dbRequests";
+import { getChatSettingsWithFooter } from '../helpers/dbRequests';
 
 /**
  * @param {TelegramBot} bot;

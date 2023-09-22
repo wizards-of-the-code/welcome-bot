@@ -7,9 +7,12 @@
         "project": "./tsconfig.json"
     },
     "rules": {
+        "import/prefer-default-export": "off",
         "no-restricted-syntax": ["error", "ForInStatement", "LabeledStatement", "WithStatement"],
         "linebreak-style": 0,
         "no-underscore-dangle" : 0,
-        "no-useless-escape": "off"
+        "no-useless-escape": "off",
+        "import/no-extraneous-dependencies": "off",
+        "implicit-arrow-linebreak": "off"
     }
 }

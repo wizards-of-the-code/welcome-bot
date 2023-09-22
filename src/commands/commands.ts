@@ -1,21 +1,19 @@
-import { BotCommand } from '@telegraf/types';
+import getBot from '../setupBot';
+import { Command } from './command.class';
+import { OwnerMessageCommand } from './handlers/ownerMessageCommand';
+import { CommandEnum, CustomCommand } from './types';
 
-export type CommandOption = 'setup_group' | 'stop_group' | 'owner_message';
+const bot = getBot();
+export const commandHandlers: Command[] = [new OwnerMessageCommand(bot)];
 
-export interface CustomCommand extends BotCommand {
-  command: CommandOption;
-}
-
-const commands: CustomCommand[] = [
-  { command: 'setup_group', description: 'Bot starts managing chat' },
+export const botCommands: CustomCommand[] = [
+  { command: CommandEnum.SETUP_GROUP, description: 'Bot starts managing chat' },
   {
-    command: 'stop_group',
+    command: CommandEnum.STOP_GROUP,
     description: 'Bot stops managing chat',
   },
   {
-    command: 'owner_message',
+    command: CommandEnum.OWNER_MESSAGE,
     description: 'Sends available actions on owner message',
   },
 ];
-
-export default commands;

@@ -1,15 +1,12 @@
-import { Bot } from '../../contracts';
-import { OwnerMessage } from '../../schemas/models';
+import { OwnerMessageActions } from '../../commands/handlers/ownerMessageCommand';
 import configService from '../../config/ConfigService';
-import logger from '../../logger/logger';
-import { session } from 'telegraf';
+import { OwnerMessage } from '../../schemas/models';
+import getBot from '../../setupBot';
 
-/**
- * Saves owner message to database & cleans database
- * @param bot
- */
-export const handleOwnerMessageSave = (bot: Bot) => {
-  bot.action('owner-message-save', async (ctx, next) => {
+const bot = getBot();
+
+export const saveNewOwnerMessage = () => {
+  bot.action(OwnerMessageActions.SAVE, async (ctx) => {
     ctx.deleteMessage();
     ctx.reply(
       'Сообщение сохранено!\n\nОтправьте команду "\\owner_message", чтоб продолжить работу с сообщением...',
@@ -23,16 +20,11 @@ export const handleOwnerMessageSave = (bot: Bot) => {
     } else {
       await ownerMessage.updateOne({ message: ctx.session.ownerMessage });
     }
-    await next();
   });
 };
 
-/**
- * Closes keyboard & cleans session
- * @param bot
- */
-export const handleOwnerMessageCancel = (bot: Bot) => {
-  bot.action('owner-message-cancel', async (ctx, next) => {
+export const cancelNewOwnerMessage = async () => {
+  bot.action(OwnerMessageActions.CANCEL, async (ctx, next) => {
     ctx.deleteMessage();
     ctx.reply('Напишите еще раз, когда что-нибудь надумаете!');
     ctx.session.ownerMessage = '';
