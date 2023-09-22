@@ -1,26 +1,13 @@
-import { Bot } from '../contracts';
-import { handleOwnerMessageCancel, handleOwnerMessageSave } from './handlers/setupOwnerMessage';
-import logger from '../logger/logger';
 import { getErrorMsg } from '../listeners/helpers/helpers';
-import {
-  notifyOwnerMessage,
-  pinOwnerMessage,
-  sendOwnerMessage,
-} from './handlers/manageOwnerMessage';
+import logger from '../logger/logger';
+import { cancelNewOwnerMessage, saveNewOwnerMessage } from './handler/newOwnerMessage';
 
-/**
- * Setups actions
- * @param bot
- */
-export const setupActions = (bot: Bot) => {
+export const setupActions = () => {
   try {
     logger.info('Set-upping actions');
-    handleOwnerMessageSave(bot);
-    handleOwnerMessageCancel(bot);
-    sendOwnerMessage(bot);
-    pinOwnerMessage(bot);
-    notifyOwnerMessage(bot);
+    saveNewOwnerMessage();
+    cancelNewOwnerMessage();
   } catch (e) {
-    logger.error(getErrorMsg(e));
+    logger.error(`While handle action ${getErrorMsg(e)}`);
   }
 };

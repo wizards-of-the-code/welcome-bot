@@ -1,12 +1,12 @@
 import onNewChatMembers from './handlers/onNewChatMembers';
 import onLeftChatMember from './handlers/onLeftChatMember';
 import onNewMessage from './handlers/onNewMessage';
-import { Bot } from '../contracts';
+import getBot from '../setupBot';
+import logger from '../logger/logger';
 
-/**
- * @param bot
- */
-const setupListeners = (bot: Bot) => {
+const setupListeners = () => {
+  const bot = getBot();
+  logger.info('Set-upping listeners');
   onNewChatMembers(bot);
   onLeftChatMember(bot);
   onNewMessage(bot);

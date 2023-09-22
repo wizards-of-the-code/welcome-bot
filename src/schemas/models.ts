@@ -1,12 +1,18 @@
 import { model } from 'mongoose';
 import {
-	chatSettingsSchema,
-	footerSchema,
-	migratedChatMessagesSchema,
-	ownerMessageSchema,
-	profileSchema
+  chatSettingsSchema,
+  footerSchema,
+  migratedChatMessagesSchema,
+  ownerMessageSchema,
+  profileSchema,
 } from './welcomeBotSchemas';
-import {ChatSettingsType, FooterType, MigratedChatDataType, OwnerMessageType, ProfileType} from './types';
+import {
+  ChatSettingsType,
+  FooterType,
+  MigratedChatDataType,
+  OwnerMessageType,
+  ProfileType,
+} from './types';
 
 export const Footer = model<FooterType>('Footer', footerSchema);
 export const ChatSettings = model<ChatSettingsType>('Chat-settings', chatSettingsSchema);
@@ -15,6 +21,6 @@ export const MigratedChatMessages = model<MigratedChatDataType>(
   migratedChatMessagesSchema,
 );
 
-export const Profile = model<ProfileType>('Profile', profileSchema)
+export const Profile = model<ProfileType>('Profile', profileSchema);
 
-export const OwnerMessage = model<OwnerMessageType>('Owner-message', ownerMessageSchema)
+export const OwnerMessage = model<OwnerMessageType>('Owner-message', ownerMessageSchema);
