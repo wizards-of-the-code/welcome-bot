@@ -12,6 +12,9 @@ import { setupActions } from './actions/setupActions';
 const main = async () => {
   await connectToMongoose();
   const bot = new Telegraf<BotContext>(config.get('BOT_TOKEN'));
+  bot.catch((e) => {
+    logger.error(getErrorMsg(e));
+  });
 
   bot.use(
     new LocalSession({
@@ -19,31 +22,15 @@ const main = async () => {
     }).middleware(),
   );
 
-  setupActions(bot);
   await setupCommands(bot);
+  setupActions(bot);
   setupListeners(bot);
 
-  bot.command('Во все группы', (ctx) => {
-    ctx.reply('Во все группы');
-  });
-
-  bot.action('С закреплением', (ctx) => {
-    ctx.reply('С закреплением');
-  });
-
-  bot.action('С уведомлением', (ctx) => {
-    ctx.reply('С уведомлением');
-  });
+  logger.info('Bot is launched');
+  bot.launch({ dropPendingUpdates: true });
 
   // Enable graceful stop
   process.once('SIGINT', () => bot.stop('SIGINT'));
   process.once('SIGTERM', () => bot.stop('SIGTERM'));
-
-  try {
-    logger.info('Bot is launched');
-    await bot.launch();
-  } catch (e) {
-    logger.error(getErrorMsg(e));
-  }
 };
 main();
