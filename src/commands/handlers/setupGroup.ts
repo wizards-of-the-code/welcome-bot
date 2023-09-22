@@ -32,7 +32,7 @@ const setupGroup = async (ctx: BotContext) => {
     });
   } else if (chatSettings) {
     logger.info(`Bot is enabled chat ${chatSettings.chatTitle}`);
-    await chatSettings.updateOne({ chatId: chat.id }, { botEnabled: true });
+    await chatSettings.updateOne({ botEnabled: true });
   }
   try {
     await ctx.deleteMessage(ctx.message.message_id);

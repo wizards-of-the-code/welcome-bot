@@ -19,12 +19,9 @@ export const deletePreviousSentMessage = async (
   }
 
   logger.info(`Updating "previousSentMessage" for chat: ${sentMessage.chatId}`);
-  await ChatSettings.updateOne(
-    { chatId: sentMessage.chatId },
-    {
-      previousSentMessage: sentMessage,
-    },
-  );
+  await ChatSettings.updateOne({
+    previousSentMessage: sentMessage,
+  });
 };
 
 /**

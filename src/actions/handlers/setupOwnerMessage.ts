@@ -1,6 +1,8 @@
 import { Bot } from '../../contracts';
 import { OwnerMessage } from '../../schemas/models';
 import configService from '../../config/ConfigService';
+import logger from '../../logger/logger';
+import { session } from 'telegraf';
 
 /**
  * Saves owner message to database & cleans database
@@ -19,10 +21,7 @@ export const handleOwnerMessageSave = (bot: Bot) => {
     if (!ownerMessage) {
       await new OwnerMessage({ message: ctx.session.ownerMessage }).save();
     } else {
-      await ownerMessage.updateOne(
-        { ownerUsername: configService.get('OWNER_USERNAME') },
-        { message: ctx.session.ownerMessage },
-      );
+      await ownerMessage.updateOne({ message: ctx.session.ownerMessage });
     }
     await next();
   });
