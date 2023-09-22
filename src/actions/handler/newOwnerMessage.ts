@@ -23,7 +23,7 @@ export const saveNewOwnerMessage = () => {
   });
 };
 
-export const cancelNewOwnerMessage = async () => {
+export const cancelNewOwnerMessage = () => {
   bot.action(OwnerMessageActions.CANCEL, async (ctx, next) => {
     ctx.deleteMessage();
     ctx.reply('Напишите еще раз, когда что-нибудь надумаете!');

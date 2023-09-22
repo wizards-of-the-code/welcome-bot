@@ -6,6 +6,7 @@ import configService from '../../config/ConfigService';
 import { CommandEnum } from '../types';
 import logger from '../../logger/logger';
 import { sendAndPingMessageToChats, sendMessageToChats } from '../helpers/sendMessage';
+import { getErrorMsg } from '../../listeners/helpers/helpers';
 
 export enum OwnerMessageActions {
   'SEND' = 'owner-message-send',
@@ -31,50 +32,54 @@ export const getChatsWhereBotEnabled = async (): Promise<number[]> => {
 
 export class OwnerMessageCommand extends Command {
   handle(): void {
-    this.bot.command(CommandEnum.OWNER_MESSAGE, async (ctx) => {
-      logger.info('Handling owner message command');
-      if (!ctx.from || !ctx.from.username || ctx.chat?.type !== 'private') return;
-      const { from } = ctx;
-      if (configService.get('OWNER_USERNAME') !== from.username) return;
+    try {
+      this.bot.command(CommandEnum.OWNER_MESSAGE, async (ctx) => {
+        logger.info('Handling owner message command');
+        if (!ctx.from || !ctx.from.username || ctx.chat?.type !== 'private') return;
+        const { from } = ctx;
+        if (configService.get('OWNER_USERNAME') !== from.username) return;
 
-      const ownerMessage = await OwnerMessage.findOne({ ownerUsername: from?.username })
-        .select('message')
-        .lean();
+        const ownerMessage = await OwnerMessage.findOne({ ownerUsername: from?.username })
+          .select('message')
+          .lean();
 
-      if (!ownerMessage || !ownerMessage.message) {
-        await ctx.reply(
-          'Сообщение еще не задано, чтоб задать сообщение, просто напишите мне любой текст',
-        );
-      } else {
-        await ctx.reply('Отправить ваше сообщение...', {
-          reply_markup: {
-            inline_keyboard: buttons,
-          },
-        });
-      }
-    });
-
-    this.bot.action(OwnerMessageActions.SEND, async (ctx) => {
-      ctx.deleteMessage();
-      const chats = await getChatsWhereBotEnabled();
-      sendMessageToChats({ ctx, chats, message: ctx.session.ownerMessage });
-    });
-
-    this.bot.action(OwnerMessageActions.NOTIFY, async (ctx) => {
-      ctx.deleteMessage();
-      const chats = await getChatsWhereBotEnabled();
-      sendMessageToChats({
-        ctx,
-        chats,
-        message: ctx.session.ownerMessage,
-        disableNotification: false,
+        if (!ownerMessage || !ownerMessage.message) {
+          await ctx.reply(
+            'Сообщение еще не задано, чтоб задать сообщение, просто напишите мне любой текст',
+          );
+        } else {
+          await ctx.reply('Отправить ваше сообщение...', {
+            reply_markup: {
+              inline_keyboard: buttons,
+            },
+          });
+        }
       });
-    });
 
-    this.bot.action(OwnerMessageActions.PIN, async (ctx) => {
-      ctx.deleteMessage();
-      const chats = await getChatsWhereBotEnabled();
-      sendAndPingMessageToChats({ ctx, chats, message: ctx.session.ownerMessage });
-    });
+      this.bot.action(OwnerMessageActions.SEND, async (ctx) => {
+        ctx.deleteMessage();
+        const chats = await getChatsWhereBotEnabled();
+        await sendMessageToChats({ ctx, chats, message: ctx.session.ownerMessage });
+      });
+
+      this.bot.action(OwnerMessageActions.NOTIFY, async (ctx) => {
+        ctx.deleteMessage();
+        const chats = await getChatsWhereBotEnabled();
+        await sendMessageToChats({
+          ctx,
+          chats,
+          message: ctx.session.ownerMessage,
+          disableNotification: false,
+        });
+      });
+
+      this.bot.action(OwnerMessageActions.PIN, async (ctx) => {
+        ctx.deleteMessage();
+        const chats = await getChatsWhereBotEnabled();
+        await sendAndPingMessageToChats({ ctx, chats, message: ctx.session.ownerMessage });
+      });
+    } catch (e) {
+      logger.error(`In OwnerMessageCommand class ${getErrorMsg(e)}`);
+    }
   }
 }

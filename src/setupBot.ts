@@ -9,7 +9,6 @@ const setupBot = (() => {
   let bot: Bot | null = null;
   return (): Bot => {
     if (bot) {
-      logger.info('Bot is already set-up, returning just bot');
       return bot;
     }
 
