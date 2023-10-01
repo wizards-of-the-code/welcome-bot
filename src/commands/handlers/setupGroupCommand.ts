@@ -4,6 +4,7 @@ import logger from '../../logger/logger';
 import { ChatSettings } from '../../schemas/models';
 import { getErrorMsg } from '../../listeners/helpers/helpers';
 import { setupChatSettings } from '../helpers/dbRequests';
+import {hasObjectKey} from "../../helpers/helpers";
 
 export class SetupGroupCommand extends Command {
   handle(): void {
@@ -21,7 +22,7 @@ export class SetupGroupCommand extends Command {
         const adminsIDs = admins.map((admin) => admin.user.id);
         const creator = admins.find((admin) => admin.status === 'creator');
 
-        if (!creator || !creator.user.username || from.id !== creator.user.id) {
+        if (!creator || !creator.user.username || !adminsIDs.includes(from.id)) {
           return;
         }
 
@@ -36,7 +37,7 @@ export class SetupGroupCommand extends Command {
             creator: { id: creator.user.id, username: creator.user.username },
           });
         } else if (chatSettings) {
-          logger.info('Bot is activated');
+          logger.info('Bot is re-activated');
           await chatSettings.updateOne({
             botEnabled: true,
             chatTitle: chat.title,

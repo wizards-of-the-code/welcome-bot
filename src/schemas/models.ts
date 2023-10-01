@@ -5,7 +5,7 @@ import {
   migratedChatMessagesSchema,
   ownerMessageSchema,
   profileSchema,
-} from './welcomeBotSchemas';
+} from './schemas';
 import {
   ChatSettingsType,
   FooterType,

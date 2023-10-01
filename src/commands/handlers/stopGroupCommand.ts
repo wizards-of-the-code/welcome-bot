@@ -13,13 +13,15 @@ export class StopGroupCommand extends Command {
         const { chat } = ctx;
         if (!chat || !ctx.from) return;
 
+        const admins = await ctx.getChatAdministrators();
+        const adminsIDs = admins.map((admin) => admin.user.id);
         const chatSettings = await ChatSettings.findOne({ chatId: chat.id });
 
         if (
           !chatSettings ||
           !chatSettings.botEnabled ||
           chatSettings.chatType === 'private' ||
-          ctx.from.id !== chatSettings.creator.id
+          !adminsIDs.includes(ctx.from.id)
         ) {
           return;
         }
