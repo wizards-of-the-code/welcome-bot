@@ -4,7 +4,7 @@ import logger from '../../logger/logger';
 import { ChatSettings } from '../../schemas/models';
 import { getErrorMsg } from '../../listeners/helpers/helpers';
 import { setupChatSettings } from '../helpers/dbRequests';
-import {hasObjectKey} from "../../helpers/helpers";
+import { hasObjectKey } from '../../helpers/helpers';
 
 export class SetupGroupCommand extends Command {
   handle(): void {
@@ -12,7 +12,7 @@ export class SetupGroupCommand extends Command {
       try {
         logger.info('Handling setup group command');
         const { chat, from } = ctx;
-        if (!chat || !from || !('title' in chat) || !ctx.message) return;
+        if (!chat || !from || chat.type === 'private' || !ctx.message) return;
 
         const chatSettings = await ChatSettings.findOne({ chatId: chat.id });
 
@@ -25,6 +25,7 @@ export class SetupGroupCommand extends Command {
         if (!creator || !creator.user.username || !adminsIDs.includes(from.id)) {
           return;
         }
+        const isPrivateGroup = !hasObjectKey(chat, 'username');
 
         if (!chatSettings) {
           logger.info('Bot is activated');
@@ -34,6 +35,7 @@ export class SetupGroupCommand extends Command {
             chatType: chat.type,
             administrators: adminsIDs,
             botEnabled: true,
+            isPrivateGroup,
             creator: { id: creator.user.id, username: creator.user.username },
           });
         } else if (chatSettings) {
@@ -43,6 +45,7 @@ export class SetupGroupCommand extends Command {
             chatTitle: chat.title,
             chatType: chat.type,
             administrators: adminsIDs,
+            isPrivateGroup
           });
         }
         await ctx.deleteMessage(ctx.message.message_id);

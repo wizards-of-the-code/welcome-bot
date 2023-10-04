@@ -22,6 +22,7 @@ export type ChatSettingsType = {
   chatId: number;
   chatType: string;
   botEnabled: boolean;
+  isPrivateGroup: boolean;
   administrators: number[];
   creator: CreatorType;
   previousSentMessage?: SentWelcomeMessageType;

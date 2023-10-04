@@ -84,6 +84,10 @@ export const chatSettingsSchema = new Schema<ChatSettingsType>(
         type: Number,
       },
     },
+    isPrivateGroup: {
+      type: Boolean,
+      required: true,
+    },
     footer: { type: ObjectId, ref: 'Footer', required: true },
   },
   { collection: CollectionsEnum.CHAT_SETTINGS, timestamps: true },
