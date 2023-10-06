@@ -9,22 +9,50 @@ import { sendAndPinMessageToChats, sendMessageToChats } from '../helpers/sendMes
 import { getErrorMsg } from '../../listeners/helpers/helpers';
 
 export enum OwnerMessageActions {
-  'SEND' = 'owner-message-send',
-  'PIN' = 'owner-message-pin',
-  'NOTIFY' = 'owner-message-notify',
+  'PRIVATE_SEND_QUITE' = 'owner-message-private-send-quite',
+  'PRIVATE_SEND_NOTIFY' = 'owner-message-private-send-notify',
+  'PRIVATE_PIN_QUITE' = 'owner-message-private-pin-quite',
+  'PRIVATE_PIN_NOTIFY' = 'owner-message-private-pin-notify',
+  'PUBLIC_SEND_QUITE' = 'owner-message-public-send-quite',
+  'PUBLIC_SEND_NOTIFY' = 'owner-message-public-send-notify',
+  'PUBLIC_PIN_QUITE' = 'owner-message-public-pin-quite',
+  'PUBLIC_PIN_NOTIFY' = 'owner-message-public-pin-notify',
   'SAVE' = 'owner-message-save',
   'CANCEL' = 'owner-message-cancel',
+  'PRIVATE' = 'owner-message-private-groups',
+  'PUBLIC' = 'owner-message-public-groups',
 }
 
-export const buttons: InlineKeyboardButton.CallbackButton[][] = [
-  [Markup.button.callback('во все группы', OwnerMessageActions.SEND)],
-  [Markup.button.callback('с закреплением', OwnerMessageActions.PIN)],
-  [Markup.button.callback('с уведомлением', OwnerMessageActions.NOTIFY)],
+export const selectGroupTypeButtons: InlineKeyboardButton.CallbackButton[][] = [
+  [Markup.button.callback('Публичные группы🔓', OwnerMessageActions.PUBLIC)],
+  [Markup.button.callback('Приватные группы🔒', OwnerMessageActions.PRIVATE)],
 ];
 
-export const getChatsWhereBotEnabled = async (): Promise<number[]> => {
+export const sendToPrivateGroups: InlineKeyboardButton.CallbackButton[][] = [
+  [Markup.button.callback('во все группы🔕', OwnerMessageActions.PRIVATE_SEND_QUITE)],
+  [Markup.button.callback('во все группы🔔', OwnerMessageActions.PRIVATE_SEND_NOTIFY)],
+  [Markup.button.callback('отправить и закрепить📌🔕', OwnerMessageActions.PRIVATE_PIN_QUITE)],
+  [Markup.button.callback('отправить и закрепить📌🔔', OwnerMessageActions.PRIVATE_PIN_NOTIFY)],
+];
+
+export const sendToPublicGroups: InlineKeyboardButton.CallbackButton[][] = [
+  [Markup.button.callback('во все группы🔕', OwnerMessageActions.PUBLIC_SEND_QUITE)],
+  [Markup.button.callback('во все группы🔔', OwnerMessageActions.PUBLIC_SEND_NOTIFY)],
+  [Markup.button.callback('отправить и закрепить📌🔕', OwnerMessageActions.PUBLIC_PIN_QUITE)],
+  [Markup.button.callback('отправить и закрепить📌🔔', OwnerMessageActions.PUBLIC_PIN_NOTIFY)],
+];
+
+export const getPrivateChatsWhereBotEnabled = async (): Promise<number[]> => {
   const chatSettings = await ChatSettings.find()
-    .where({ botEnabled: true })
+    .where({ botEnabled: true, isPrivateGroup: true })
+    .select('chatId')
+    .lean();
+  return chatSettings.map((chat) => chat.chatId);
+};
+
+export const getPublicChatsWhereBotEnabled = async (): Promise<number[]> => {
+  const chatSettings = await ChatSettings.find()
+    .where({ botEnabled: true, isPrivateGroup: false })
     .select('chatId')
     .lean();
   return chatSettings.map((chat) => chat.chatId);
@@ -48,22 +76,32 @@ export class OwnerMessageCommand extends Command {
             'Сообщение еще не задано, чтоб задать сообщение, просто напишите мне любой текст',
           );
         } else {
-          await ctx.reply('Отправить ваше сообщение...', {
+          await ctx.reply('Выбирете тип групп', {
             reply_markup: {
-              inline_keyboard: buttons,
+              inline_keyboard: selectGroupTypeButtons,
+              one_time_keyboard: true
             },
           });
         }
       });
 
-      this.bot.action(OwnerMessageActions.SEND, async (ctx) => {
-        const chats = await getChatsWhereBotEnabled();
-        logger.info(JSON.stringify(chats));
+      //PRIVATE
+      this.bot.action(OwnerMessageActions.PRIVATE, async (ctx) => {
+        await ctx.deleteMessage();
+        await ctx.reply('Отправить ваше сообщение...', {
+          reply_markup: {
+            inline_keyboard: sendToPrivateGroups,
+          },
+        });
+      });
+
+      this.bot.action(OwnerMessageActions.PRIVATE_SEND_QUITE, async (ctx) => {
+        const chats = await getPrivateChatsWhereBotEnabled();
         await sendMessageToChats({ ctx, chats, message: ctx.session.ownerMessage });
       });
 
-      this.bot.action(OwnerMessageActions.NOTIFY, async (ctx) => {
-        const chats = await getChatsWhereBotEnabled();
+      this.bot.action(OwnerMessageActions.PRIVATE_SEND_NOTIFY, async (ctx) => {
+        const chats = await getPrivateChatsWhereBotEnabled();
         await sendMessageToChats({
           ctx,
           chats,
@@ -72,9 +110,59 @@ export class OwnerMessageCommand extends Command {
         });
       });
 
-      this.bot.action(OwnerMessageActions.PIN, async (ctx) => {
-        const chats = await getChatsWhereBotEnabled();
+      this.bot.action(OwnerMessageActions.PRIVATE_PIN_QUITE, async (ctx) => {
+        const chats = await getPrivateChatsWhereBotEnabled();
         await sendAndPinMessageToChats({ ctx, chats, message: ctx.session.ownerMessage });
+      });
+
+      this.bot.action(OwnerMessageActions.PRIVATE_PIN_NOTIFY, async (ctx) => {
+        const chats = await getPrivateChatsWhereBotEnabled();
+        await sendAndPinMessageToChats({
+          ctx,
+          chats,
+          message: ctx.session.ownerMessage,
+          disableNotification: false,
+        });
+      });
+
+      //PUBLIC
+      this.bot.action(OwnerMessageActions.PUBLIC, async (ctx) => {
+        await ctx.deleteMessage();
+        await ctx.reply('Отправить ваше сообщение...', {
+          reply_markup: {
+            inline_keyboard: sendToPublicGroups,
+          },
+        });
+      });
+
+      this.bot.action(OwnerMessageActions.PUBLIC_SEND_QUITE, async (ctx) => {
+        const chats = await getPublicChatsWhereBotEnabled();
+        await sendMessageToChats({ ctx, chats, message: ctx.session.ownerMessage });
+      });
+
+      this.bot.action(OwnerMessageActions.PUBLIC_SEND_NOTIFY, async (ctx) => {
+        const chats = await getPublicChatsWhereBotEnabled();
+        await sendMessageToChats({
+          ctx,
+          chats,
+          message: ctx.session.ownerMessage,
+          disableNotification: false,
+        });
+      });
+
+      this.bot.action(OwnerMessageActions.PUBLIC_PIN_QUITE, async (ctx) => {
+        const chats = await getPublicChatsWhereBotEnabled();
+        await sendAndPinMessageToChats({ ctx, chats, message: ctx.session.ownerMessage });
+      });
+
+      this.bot.action(OwnerMessageActions.PUBLIC_PIN_NOTIFY, async (ctx) => {
+        const chats = await getPublicChatsWhereBotEnabled();
+        await sendAndPinMessageToChats({
+          ctx,
+          chats,
+          message: ctx.session.ownerMessage,
+          disableNotification: false,
+        });
       });
     } catch (e) {
       logger.error(`In OwnerMessageCommand class ${getErrorMsg(e)}`);
