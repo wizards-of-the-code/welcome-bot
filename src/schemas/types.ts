@@ -12,7 +12,7 @@ export type FooterType = {
 
 export type CreatorType = {
   id: number;
-  username: string;
+  username?: string;
 };
 
 export type ChatSettingsType = {
@@ -24,7 +24,7 @@ export type ChatSettingsType = {
   botEnabled: boolean;
   isPrivateGroup: boolean;
   administrators: number[];
-  creator: CreatorType;
+  creator: CreatorType | null;
   previousSentMessage?: SentWelcomeMessageType;
   footer: FooterType;
   createdAt: Date;

@@ -74,7 +74,7 @@ export const chatSettingsSchema = new Schema<ChatSettingsType>(
     },
     creator: {
       id: { type: Number, required: true },
-      username: { type: String, required: true },
+      username: { type: String, required: false },
     },
     previousSentMessage: {
       messageId: {

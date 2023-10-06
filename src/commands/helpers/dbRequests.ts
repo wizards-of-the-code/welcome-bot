@@ -1,9 +1,8 @@
-import {ChatSettingsType, CreatorType, FooterType} from '../../schemas/types';
+import {ChatSettingsType, FooterType} from '../../schemas/types';
 import { ChatSettings, Footer, MigratedChatMessages } from '../../schemas/models';
 import { FooterTitles } from '../../contracts';
 import { escapeForMarkdown2 } from '../../listeners/helpers/helpers';
 import { defaultWelcomeMessage } from '../../constants';
-import logger from "../../logger/logger";
 
 export type SetupChatSettingsParams = Omit<ChatSettingsType, 'createdAt' | 'updatedAt' | '_id' | 'footer' | 'message'>;
 

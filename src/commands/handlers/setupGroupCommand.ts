@@ -16,15 +16,17 @@ export class SetupGroupCommand extends Command {
 
         const chatSettings = await ChatSettings.findOne({ chatId: chat.id });
 
-        if (chatSettings?.botEnabled) return;
+        if (chatSettings?.botEnabled) {
+          await ctx.reply('Bot is already activated');
+          return;
+        };
 
         const admins = await ctx.getChatAdministrators();
         const adminsIDs = admins.map((admin) => admin.user.id);
         const creator = admins.find((admin) => admin.status === 'creator');
 
-        if (!creator || !creator.user.username || !adminsIDs.includes(from.id)) {
-          return;
-        }
+        if (!adminsIDs.includes(from.id)) return;
+
         const isPrivateGroup = !hasObjectKey(chat, 'username');
 
         if (!chatSettings) {
@@ -36,7 +38,12 @@ export class SetupGroupCommand extends Command {
             administrators: adminsIDs,
             botEnabled: true,
             isPrivateGroup,
-            creator: { id: creator.user.id, username: creator.user.username },
+            creator: creator
+              ? {
+                  id: creator.user.id,
+                  username: creator.user.username,
+                }
+              : null,
           });
         } else if (chatSettings) {
           logger.info('Bot is re-activated');
@@ -45,7 +52,7 @@ export class SetupGroupCommand extends Command {
             chatTitle: chat.title,
             chatType: chat.type,
             administrators: adminsIDs,
-            isPrivateGroup
+            isPrivateGroup,
           });
         }
         await ctx.deleteMessage(ctx.message.message_id);
