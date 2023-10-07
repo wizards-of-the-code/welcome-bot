@@ -1,5 +1,6 @@
 import { model } from 'mongoose';
 import {
+  botDescriptionSchema,
   chatSettingsSchema,
   footerSchema,
   migratedChatMessagesSchema,
@@ -7,6 +8,7 @@ import {
   profileSchema,
 } from './schemas';
 import {
+  BotDescriptionType,
   ChatSettingsType,
   FooterType,
   MigratedChatDataType,
@@ -24,3 +26,4 @@ export const MigratedChatMessages = model<MigratedChatDataType>(
 export const Profile = model<ProfileType>('Profile', profileSchema);
 
 export const OwnerMessage = model<OwnerMessageType>('Owner-message', ownerMessageSchema);
+export const BotDescription = model<BotDescriptionType>('Bot-description', botDescriptionSchema);

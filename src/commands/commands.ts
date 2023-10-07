@@ -1,4 +1,4 @@
-import getBot from '../setupBot';
+import getBot from '../setupBot/setupBot';
 import { Command } from './command.class';
 import { OwnerMessageCommand } from './handlers/ownerMessageCommand';
 import { CommandEnum, CustomCommand } from './types';

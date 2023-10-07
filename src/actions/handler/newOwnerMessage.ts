@@ -1,7 +1,7 @@
 import { OwnerMessageAction } from '../../commands/handlers/ownerMessageCommand';
 import configService from '../../config/ConfigService';
 import { OwnerMessage } from '../../schemas/models';
-import getBot from '../../setupBot';
+import getBot from '../../setupBot/setupBot';
 
 const bot = getBot();
 

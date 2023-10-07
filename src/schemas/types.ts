@@ -57,3 +57,8 @@ export type OwnerMessageType = {
   createdAt: Date;
   updatedAt: Date;
 };
+
+export type BotDescriptionType = {
+  _id: ObjectId;
+  description: string;
+}

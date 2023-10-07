@@ -2,6 +2,7 @@ import { Schema } from 'mongoose';
 import { ObjectId } from 'mongodb';
 import { CollectionsEnum } from '../contracts';
 import {
+  BotDescriptionType,
   ChatSettingsType,
   FooterType,
   MigratedChatDataType,
@@ -133,4 +134,14 @@ export const ownerMessageSchema = new Schema<OwnerMessageType>(
     },
   },
   { collection: CollectionsEnum.OWNER_MESSAGE, timestamps: true },
+);
+
+export const botDescriptionSchema = new Schema<BotDescriptionType>(
+  {
+    description: {
+      required: true,
+      type: String,
+    },
+  },
+  { collection: CollectionsEnum.BOT_DESCRIPTION, timestamps: false },
 );

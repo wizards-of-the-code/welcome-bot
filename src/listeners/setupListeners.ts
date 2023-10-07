@@ -1,7 +1,7 @@
 import onNewChatMembers from './handlers/onNewChatMembers';
 import onLeftChatMember from './handlers/onLeftChatMember';
 import onNewMessage from './handlers/onNewMessage';
-import getBot from '../setupBot';
+import getBot from '../setupBot/setupBot';
 import logger from '../logger/logger';
 
 const setupListeners = () => {

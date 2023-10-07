@@ -1,6 +1,6 @@
 import { getErrorMsg } from '../listeners/helpers/helpers';
 import logger from '../logger/logger';
-import getBot from '../setupBot';
+import getBot from '../setupBot/setupBot';
 import { botCommands, commandHandlers } from './commands';
 
 const setupCommands = async () => {

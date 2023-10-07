@@ -19,6 +19,7 @@ export enum CollectionsEnum {
   'MIGRATED_MESSAGES' = 'wb-migrated-messages',
   'PROFILE' = 'wb-profiles',
   'OWNER_MESSAGE' = 'wb-owner-messages',
+  'BOT_DESCRIPTION' = 'wb-bot-description',
 }
 
 export enum FooterTitles {
