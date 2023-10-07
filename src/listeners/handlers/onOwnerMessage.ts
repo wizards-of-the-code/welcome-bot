@@ -1,11 +1,11 @@
 import config from '../../config/ConfigService';
 import { MessageUpdate } from '../../contracts';
-import { OwnerMessageActions } from '../../commands/handlers/ownerMessageCommand';
+import { OwnerMessageAction } from '../../commands/handlers/ownerMessageCommand';
 
 const buttons = [
   [
-    { text: 'Сохранить', callback_data: OwnerMessageActions.SAVE },
-    { text: 'Отмена', callback_data: OwnerMessageActions.CANCEL },
+    { text: 'Сохранить', callback_data: OwnerMessageAction.SAVE },
+    { text: 'Отмена', callback_data: OwnerMessageAction.CANCEL },
   ],
 ];
 

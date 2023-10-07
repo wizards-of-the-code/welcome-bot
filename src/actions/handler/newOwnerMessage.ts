@@ -1,4 +1,4 @@
-import { OwnerMessageActions } from '../../commands/handlers/ownerMessageCommand';
+import { OwnerMessageAction } from '../../commands/handlers/ownerMessageCommand';
 import configService from '../../config/ConfigService';
 import { OwnerMessage } from '../../schemas/models';
 import getBot from '../../setupBot';
@@ -6,7 +6,7 @@ import getBot from '../../setupBot';
 const bot = getBot();
 
 export const saveNewOwnerMessage = () => {
-  bot.action(OwnerMessageActions.SAVE, async (ctx) => {
+  bot.action(OwnerMessageAction.SAVE, async (ctx) => {
     ctx.deleteMessage();
     ctx.reply(
       'Сообщение сохранено!\n\nОтправьте команду /owner_message", чтоб продолжить работу с сообщением...',
@@ -24,7 +24,7 @@ export const saveNewOwnerMessage = () => {
 };
 
 export const cancelNewOwnerMessage = () => {
-  bot.action(OwnerMessageActions.CANCEL, async (ctx, next) => {
+  bot.action(OwnerMessageAction.CANCEL, async (ctx, next) => {
     ctx.deleteMessage();
     ctx.reply('Напишите еще раз, когда что-нибудь надумаете!');
     ctx.session.ownerMessage = '';
