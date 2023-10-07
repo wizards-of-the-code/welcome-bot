@@ -1,12 +1,17 @@
 import { InlineKeyboardButton } from 'telegraf/typings/core/types/typegram';
 import { Markup } from 'telegraf';
-import { ChatSettings, OwnerMessage } from '../../schemas/models';
+import { OwnerMessage } from '../../schemas/models';
 import { Command } from '../command.class';
 import configService from '../../config/ConfigService';
 import { CommandEnum } from '../types';
 import logger from '../../logger/logger';
 import { sendAndPinMessageToChats, sendMessageToChats } from '../helpers/sendMessage';
 import { getErrorMsg } from '../../listeners/helpers/helpers';
+import {
+  getAllChatsWhereBotEnabled,
+  getPrivateChatsWhereBotEnabled,
+  getPublicChatsWhereBotEnabled
+} from "../helpers/dbRequests";
 
 export enum OwnerMessageActions {
   'SAVE' = 'owner-message-save',
@@ -37,47 +42,41 @@ export const ownerMessageSendingWay = {
   },
 };
 
+type ChatType = keyof typeof ownerMessageSendingWay;
+const ownerMessageSendingWayKeys = Object.keys(ownerMessageSendingWay) as ChatType[];
+const setHandlerOnEveryChatType = (handler: (chatTypeKey: ChatType) => void) =>
+  ownerMessageSendingWayKeys.forEach((key) => handler(key));
+
 export const selectGroupTypeButtons: InlineKeyboardButton.CallbackButton[][] = [
   [Markup.button.callback('Публичные группы🔓', OwnerMessageActions.PUBLIC)],
   [Markup.button.callback('Приватные группы🔒', OwnerMessageActions.PRIVATE)],
-  [Markup.button.callback('Все группы', OwnerMessageActions.ALL)],
+  [Markup.button.callback('Все группы🔓🔒', OwnerMessageActions.ALL)],
 ];
 
-const getSelectButtons = (chatType: 'private' | 'public' | 'all') => [
-  [Markup.button.callback('во все группы🔕', ownerMessageSendingWay[chatType].sendQuitely)],
-  [Markup.button.callback('во все группы🔔', ownerMessageSendingWay[chatType].sendWithNotification)],
-  [Markup.button.callback('отправить и закрепить📌🔕', ownerMessageSendingWay[chatType].pinQuitely)],
-  [Markup.button.callback('отправить и закрепить📌🔔', ownerMessageSendingWay[chatType].pinWithNotification)],
+const getSelectButtons = (chatType: ChatType) => [
+  [Markup.button.callback('отправить🔕', ownerMessageSendingWay[chatType].sendQuitely)],
+  [
+    Markup.button.callback(
+      'отправить🔔',
+      ownerMessageSendingWay[chatType].sendWithNotification,
+    ),
+  ],
+  [
+    Markup.button.callback(
+      'отправить и закрепить📌🔕',
+      ownerMessageSendingWay[chatType].pinQuitely,
+    ),
+  ],
+  [
+    Markup.button.callback(
+      'отправить и закрепить📌🔔',
+      ownerMessageSendingWay[chatType].pinWithNotification,
+    ),
+  ],
 ];
-
-
-export const getAllChatsWhereBotEnabled = async (): Promise<number[]> => {
-  const chatSettings = await ChatSettings.find()
-    .where({ botEnabled: true })
-    .select('chatId')
-    .lean();
-  return chatSettings.map((chat) => chat.chatId);
-};
-
-export const getPrivateChatsWhereBotEnabled = async (): Promise<number[]> => {
-  const chatSettings = await ChatSettings.find()
-    .where({ botEnabled: true, isPrivateGroup: true })
-    .select('chatId')
-    .lean();
-  return chatSettings.map((chat) => chat.chatId);
-};
-
-export const getPublicChatsWhereBotEnabled = async (): Promise<number[]> => {
-  const chatSettings = await ChatSettings.find()
-    .where({ botEnabled: true, isPrivateGroup: false })
-    .select('chatId')
-    .lean();
-  return chatSettings.map((chat) => chat.chatId);
-};
 
 export class OwnerMessageCommand extends Command {
   chats: number[] = [];
-
   handle(): void {
     try {
       this.bot.command(CommandEnum.OWNER_MESSAGE, async (ctx) => {
@@ -102,7 +101,6 @@ export class OwnerMessageCommand extends Command {
           });
         }
       });
-
       //PRIVATE
       this.bot.action(OwnerMessageActions.PRIVATE, async (ctx) => {
         await ctx.deleteMessage();
@@ -113,37 +111,6 @@ export class OwnerMessageCommand extends Command {
         });
         this.chats = await getPrivateChatsWhereBotEnabled();
       });
-
-      this.bot.action(ownerMessageSendingWay.private.sendQuitely, async (ctx) => {
-        await sendMessageToChats({ ctx, chats: this.chats, message: ctx.session.ownerMessage });
-      });
-
-      this.bot.action(ownerMessageSendingWay.private.sendWithNotification, async (ctx) => {
-        await sendMessageToChats({
-          ctx,
-          chats: this.chats,
-          message: ctx.session.ownerMessage,
-          disableNotification: false,
-        });
-      });
-
-      this.bot.action(ownerMessageSendingWay.private.pinQuitely, async (ctx) => {
-        await sendAndPinMessageToChats({
-          ctx,
-          chats: this.chats,
-          message: ctx.session.ownerMessage,
-        });
-      });
-
-      this.bot.action(ownerMessageSendingWay.private.pinWithNotification, async (ctx) => {
-        await sendAndPinMessageToChats({
-          ctx,
-          chats: this.chats,
-          message: ctx.session.ownerMessage,
-          disableNotification: false,
-        });
-      });
-
       //PUBLIC
       this.bot.action(OwnerMessageActions.PUBLIC, async (ctx) => {
         await ctx.deleteMessage();
@@ -154,37 +121,6 @@ export class OwnerMessageCommand extends Command {
         });
         this.chats = await getPublicChatsWhereBotEnabled();
       });
-
-      this.bot.action(ownerMessageSendingWay.public.sendQuitely, async (ctx) => {
-        await sendMessageToChats({ ctx, chats: this.chats, message: ctx.session.ownerMessage });
-      });
-
-      this.bot.action(ownerMessageSendingWay.public.sendWithNotification, async (ctx) => {
-        await sendMessageToChats({
-          ctx,
-          chats: this.chats,
-          message: ctx.session.ownerMessage,
-          disableNotification: false,
-        });
-      });
-
-      this.bot.action(ownerMessageSendingWay.public.pinQuitely, async (ctx) => {
-        await sendAndPinMessageToChats({
-          ctx,
-          chats: this.chats,
-          message: ctx.session.ownerMessage,
-        });
-      });
-
-      this.bot.action(ownerMessageSendingWay.public.pinWithNotification, async (ctx) => {
-        await sendAndPinMessageToChats({
-          ctx,
-          chats: this.chats,
-          message: ctx.session.ownerMessage,
-          disableNotification: false,
-        });
-      });
-
       //ALL
       this.bot.action(OwnerMessageActions.ALL, async (ctx) => {
         await ctx.deleteMessage();
@@ -196,33 +132,38 @@ export class OwnerMessageCommand extends Command {
         this.chats = await getAllChatsWhereBotEnabled();
       });
 
-      this.bot.action(ownerMessageSendingWay.all.sendQuitely, async (ctx) => {
-        await sendMessageToChats({ ctx, chats: this.chats, message: ctx.session.ownerMessage });
-      });
-
-      this.bot.action(ownerMessageSendingWay.all.sendWithNotification, async (ctx) => {
-        await sendMessageToChats({
-          ctx,
-          chats: this.chats,
-          message: ctx.session.ownerMessage,
-          disableNotification: false,
+      setHandlerOnEveryChatType((key) => {
+        this.bot.action(ownerMessageSendingWay[key].sendQuitely, async (ctx) => {
+          await sendMessageToChats({ ctx, chats: this.chats, message: ctx.session.ownerMessage });
         });
       });
-
-      this.bot.action(ownerMessageSendingWay.all.pinQuitely, async (ctx) => {
-        await sendAndPinMessageToChats({
-          ctx,
-          chats: this.chats,
-          message: ctx.session.ownerMessage,
+      setHandlerOnEveryChatType((key) => {
+        this.bot.action(ownerMessageSendingWay[key].sendWithNotification, async (ctx) => {
+          await sendMessageToChats({
+            ctx,
+            chats: this.chats,
+            message: ctx.session.ownerMessage,
+            disableNotification: false,
+          });
         });
       });
-
-      this.bot.action(ownerMessageSendingWay.all.pinWithNotification, async (ctx) => {
-        await sendAndPinMessageToChats({
-          ctx,
-          chats: this.chats,
-          message: ctx.session.ownerMessage,
-          disableNotification: false,
+      setHandlerOnEveryChatType((key) => {
+        this.bot.action(ownerMessageSendingWay[key].pinQuitely, async (ctx) => {
+          await sendAndPinMessageToChats({
+            ctx,
+            chats: this.chats,
+            message: ctx.session.ownerMessage,
+          });
+        });
+      });
+      setHandlerOnEveryChatType((key) => {
+        this.bot.action(ownerMessageSendingWay[key].pinWithNotification, async (ctx) => {
+          await sendAndPinMessageToChats({
+            ctx,
+            chats: this.chats,
+            message: ctx.session.ownerMessage,
+            disableNotification: false,
+          });
         });
       });
     } catch (e) {

@@ -27,3 +27,26 @@ export const setupChatSettings = async ({
     botEnabled,
   }).save();
 };
+export const getAllChatsWhereBotEnabled = async (): Promise<number[]> => {
+  const chatSettings = await ChatSettings.find()
+    .where({ botEnabled: true })
+    .select('chatId')
+    .lean();
+  return chatSettings.map((chat) => chat.chatId);
+};
+
+export const getPrivateChatsWhereBotEnabled = async (): Promise<number[]> => {
+  const chatSettings = await ChatSettings.find()
+    .where({ botEnabled: true, isPrivateGroup: true })
+    .select('chatId')
+    .lean();
+  return chatSettings.map((chat) => chat.chatId);
+};
+
+export const getPublicChatsWhereBotEnabled = async (): Promise<number[]> => {
+  const chatSettings = await ChatSettings.find()
+    .where({ botEnabled: true, isPrivateGroup: false })
+    .select('chatId')
+    .lean();
+  return chatSettings.map((chat) => chat.chatId);
+};
