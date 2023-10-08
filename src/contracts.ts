@@ -1,23 +1,18 @@
 import { Context, NarrowedContext, Scenes, Telegraf } from 'telegraf';
-import { Message, Update } from '@telegraf/types';
+import { Message, Update, User } from '@telegraf/types';
 
 export type NewChatMembers = Message.NewChatMembersMessage['new_chat_members'];
 
-interface MyWizardSession extends Scenes.WizardSessionData {
-  captchaAnswer: number;
+export interface MyWizardSession extends Scenes.WizardSessionData {
+  captchaAnswer: string;
   counter: number;
 }
-
-export type User = {
-  username: string;
-  firstname: string;
-  id: number;
-};
+export type MySceneSession = Scenes.SceneContextScene<BotContext, MyWizardSession>
 
 export interface SessionData extends Scenes.WizardSession<MyWizardSession> {
   ownerMessage: string;
-  newChatMembers: NewChatMembers;
-  captchaAnswer: number;
+  newChatMember: User;
+  captchaAnswer: string;
   counter: number;
   welcome: {
     welcomeMessage: string;
@@ -31,7 +26,7 @@ export interface SessionData extends Scenes.WizardSession<MyWizardSession> {
 
 export interface BotContext extends Context {
   session: SessionData;
-  scene: Scenes.SceneContextScene<BotContext, MyWizardSession>;
+  scene: MySceneSession;
   wizard: Scenes.WizardContextWizard<BotContext>;
 }
 

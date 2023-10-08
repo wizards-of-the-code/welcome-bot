@@ -1,3 +1,7 @@
+import { BotContext } from '../contracts';
+import logger from '../logger/logger';
+import { getErrorMsg } from '../listeners/helpers/helpers';
+
 export const hasObjectKey = (obj: unknown, key: string): boolean => {
   if (obj instanceof Object) {
     return Object.prototype.hasOwnProperty.call(obj, key);
@@ -11,4 +15,10 @@ export const getAndDeleteItemFromArr = <T>(index: number, array: T[]): T => {
   return item;
 };
 
-
+export const deleteMessage = async (ctx: BotContext, chatID: number, messageID: number) => {
+  try {
+    await ctx.telegram.deleteMessage(chatID, messageID);
+  } catch (e) {
+    logger.error(getErrorMsg(e));
+  }
+};

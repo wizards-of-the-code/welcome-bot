@@ -6,13 +6,13 @@ import { ChatSettings } from '../schemas/models';
 export const welcomeNewMember = async (ctx: BotContext) => {
   const { chat, session } = ctx;
   logger.info('Handle "new_chat_members" event for chat');
-  if (!chat || !session.newChatMembers?.length) return;
+  if (!chat || !session.newChatMember) return;
   try {
-    const newMember = session.newChatMembers[0];
-    const newMemberName = newMember.username || newMember.first_name;
+    const { newChatMember } = session;
+    const newMemberName = newChatMember.username || newChatMember.first_name;
     const { message_id: messageId } = await ctx.telegram.sendMessage(
       chat.id,
-      `${customMention(newMemberName, newMember.id)}\n${session.welcome.welcomeMessage}\n\n${
+      `${customMention(newMemberName, newChatMember.id)}\n${session.welcome.welcomeMessage}\n\n${
         session.welcome.footer
       }`,
       {

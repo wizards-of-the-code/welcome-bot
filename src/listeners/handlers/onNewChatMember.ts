@@ -3,27 +3,29 @@ import logger from '../../logger/logger';
 import { getErrorMsg } from '../helpers/helpers';
 import { getChatSettingsWithFooter } from '../helpers/dbRequests';
 import { Bot } from '../../contracts';
-import { generateCaptchaTask } from '../../helpers/captcha';
+import { generateDigitCaptchaTask } from '../../helpers/captcha';
+import { deleteMessage } from '../../helpers/helpers';
 
-const allowedTaskTime = 60; //sec
 
 export const onNewChatMember = (bot: Bot) => {
   bot.on(message('new_chat_members'), async (ctx) => {
     const { chat } = ctx;
     const chatSettings = await getChatSettingsWithFooter(chat.id);
     const newMembers = ctx.message.new_chat_members;
-    const newMember = ctx.message.new_chat_members[0];
+    const newMember = newMembers[0];
 
-    if (!chatSettings || !chatSettings?.botEnabled || newMember.is_bot) return;
+    if (!chatSettings || !chatSettings?.botEnabled || ctx.from.id === ctx.botInfo.id /*newMember.is_bot*/) return;
 
-    await generateCaptchaTask(ctx, allowedTaskTime);
+    ctx.session.counter = 0;
+    await generateDigitCaptchaTask({ ctx, session: ctx.session, user: newMember });
 
     ctx.session.welcome = {
       welcomeMessage: chatSettings.message,
       footer: chatSettings.footer.message,
       previousSentMessage: chatSettings.previousSentMessage,
     };
-    ctx.session.newChatMembers = newMembers;
+    ctx.session.newChatMember = newMember;
+    newMember.username;
 
     try {
       // Deletes message that says that user has joined the chat
@@ -33,14 +35,11 @@ export const onNewChatMember = (bot: Bot) => {
     }
 
     if (chatSettings.previousSentMessage?.messageId && chatSettings.previousSentMessage?.chatId) {
-      try {
-        await ctx.telegram.deleteMessage(
-          chatSettings.previousSentMessage.chatId,
-          chatSettings.previousSentMessage.messageId,
-        );
-      } catch (e) {
-        logger.error(getErrorMsg(e));
-      }
+      await deleteMessage(
+        ctx,
+        chatSettings.previousSentMessage.chatId,
+        chatSettings.previousSentMessage.messageId,
+      );
     }
   });
 };
