@@ -27,7 +27,7 @@ export const escapeForMarkdown2 = (text: string): string => escapers.MarkdownV2(
  * @return {string}
  */
 export const customMention = (username: string, id: number): string =>
-  `[@${username}](tg://user?id=${id})`;
+  `[@${escapeForMarkdown2(username)}](tg://user?id=${id})`;
 
 /**
  * Adds backslash before special chars

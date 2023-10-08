@@ -15,6 +15,10 @@ export type CreatorType = {
   username?: string;
 };
 
+export enum CaptchaEnum {
+  DIGIT = 'digit',
+  IMAGE = 'image'
+}
 export type ChatSettingsType = {
   _id: ObjectId;
   message: string;
@@ -25,6 +29,7 @@ export type ChatSettingsType = {
   isPrivateGroup: boolean;
   administrators: number[];
   creator: CreatorType | null;
+  captcha?: CaptchaEnum;
   previousSentMessage?: SentWelcomeMessageType;
   footer: FooterType;
   createdAt: Date;

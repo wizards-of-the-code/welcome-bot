@@ -4,7 +4,6 @@ import config from '../config/ConfigService';
 import logger from '../logger/logger';
 import { getErrorMsg } from '../listeners/helpers/helpers';
 import LocalSession from 'telegraf-session-local';
-import { setBotDescription } from './setBotDescription';
 
 const setupBot = (() => {
   let bot: Bot | null = null;
@@ -18,8 +17,6 @@ const setupBot = (() => {
     bot.catch((e) => {
       logger.error(getErrorMsg(e));
     });
-
-    setBotDescription(bot);
 
     bot.use(
       new LocalSession({

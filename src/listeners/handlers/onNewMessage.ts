@@ -4,6 +4,7 @@ import { getErrorMsg } from '../helpers/helpers';
 import logger from '../../logger/logger';
 import { collectTags } from '../../analytics/collectTags';
 import { onOwnerMessage } from './onOwnerMessage';
+import { onNewChatMemberText } from './onNewChatMemberText';
 
 /**
  * @param bot
@@ -13,6 +14,7 @@ const onNewMessage = (bot: Bot) => {
     try {
       await collectTags(ctx);
       await onOwnerMessage(ctx);
+      await onNewChatMemberText(ctx);
       await next();
     } catch (e) {
       logger.error(getErrorMsg(e));

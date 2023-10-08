@@ -3,6 +3,7 @@ import { ObjectId } from 'mongodb';
 import { CollectionsEnum } from '../contracts';
 import {
   BotDescriptionType,
+  CaptchaEnum,
   ChatSettingsType,
   FooterType,
   MigratedChatDataType,
@@ -88,6 +89,11 @@ export const chatSettingsSchema = new Schema<ChatSettingsType>(
     isPrivateGroup: {
       type: Boolean,
       required: true,
+    },
+    captcha: {
+      type: String,
+      required: false,
+      enum: [CaptchaEnum.DIGIT, CaptchaEnum.IMAGE],
     },
     footer: { type: ObjectId, ref: 'Footer', required: true },
   },
