@@ -3,7 +3,7 @@ import { BotContext } from '../contracts';
 import { message } from 'telegraf/filters';
 import { welcomeNewMember } from '../middlewares/welcomeNewMember';
 import logger from '../logger/logger';
-import { banUser, generateDigitCaptchaTask } from '../helpers/captcha';
+import {banUser, generateCaptchaTask } from '../helpers/captcha';
 import { taskManager } from '../helpers/taskManager';
 import { deleteMessage } from '../helpers/helpers';
 import { customMention } from '../listeners/helpers/helpers';
@@ -15,14 +15,14 @@ const maxAttempt = 3;
 const checkCaptchaAnswerWizard = new Composer<BotContext>();
 checkCaptchaAnswerWizard.on(message('text'), async (ctx) => {
   const { text } = ctx.message;
-  const { session } = ctx.scene;
+  const { session } = ctx;
   const isCorrect = session.captchaAnswer === text;
   if (!isCorrect && maxAttempt > session.counter) {
     logger.warn('Captcha wizard, step back');
     await taskManager.stopTask(ctx);
     await deleteMessage(ctx, ctx.chat.id, ctx.message.message_id);
 
-    await generateDigitCaptchaTask({ ctx, session: ctx.scene.session, user: ctx.from });
+    await generateCaptchaTask({ ctx, user: ctx.from });
     return;
   } else if (!isCorrect && maxAttempt <= session.counter) {
     await taskManager.stopTask(ctx);
@@ -42,12 +42,13 @@ checkCaptchaAnswerWizard.on(message('text'), async (ctx) => {
   }
 });
 
-export const digitCaptchaWizardScene = new Scenes.WizardScene<BotContext>(
+export const captchaWizardScene = new Scenes.WizardScene<BotContext>(
   captchaWizardID,
   async (ctx) => {
-    if (!ctx.from) return;
-    ctx.scene.session.counter = 1;
-    await generateDigitCaptchaTask({ ctx, session: ctx.scene.session, user: ctx.from });
+    if (!ctx.from || !ctx.session.captcha) return;
+    ctx.session.counter = ctx.session.counter + 1;
+    ctx.session.captcha = ctx.session.captcha;
+    await generateCaptchaTask({ ctx, user: ctx.from });
     return ctx.wizard.next();
   },
   checkCaptchaAnswerWizard,

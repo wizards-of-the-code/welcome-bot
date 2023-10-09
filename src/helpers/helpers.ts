@@ -22,3 +22,8 @@ export const deleteMessage = async (ctx: BotContext, chatID: number, messageID: 
     logger.error(getErrorMsg(e));
   }
 };
+
+export const getAdminIDS = async (ctx: BotContext) => {
+  const admins = await ctx.getChatAdministrators();
+  return admins.map((admin) => admin.user.id);
+};

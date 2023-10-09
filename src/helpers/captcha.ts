@@ -1,17 +1,18 @@
 import { calculateUntilDate, getRandomInt, secondsToMs } from '../scenes/helpers';
-import {BotContext, MyWizardSession, SessionData} from '../contracts';
+import { BotContext } from '../contracts';
 import logger from '../logger/logger';
 import { customMention, escapeForMarkdown2, getErrorMsg } from '../listeners/helpers/helpers';
-import { banTime } from '../scenes/digitCaptchaWizardScene';
+import { banTime } from '../scenes/captchaWizardScene';
 import { taskManager } from './taskManager';
 import { deleteMessage } from './helpers';
 import { User } from '@telegraf/types';
+import { CaptchaEnum } from '../schemas/types';
 
 const maxAttempt = 3;
 const allowedTaskTime = 60; //sec
 
 export const generateDigitCaptcha = () => {
-  const [firstNumber, secondNumber] = [getRandomInt(0, 20), getRandomInt(0, 20)];
+  const [firstNumber, secondNumber] = [getRandomInt(0, 11), getRandomInt(0, 20)];
   return {
     answer: firstNumber + secondNumber,
     message: `What is the result of ${firstNumber} + ${secondNumber}?`,
@@ -28,24 +29,24 @@ export const banUser = async (ctx: BotContext, userToBan: number, banTime: numbe
   }
 };
 
+export type GenerateCaptchaTaskParams = {
+  ctx: BotContext;
+  user: User;
+  taskDeadline?: number;
+};
+
 export const generateDigitCaptchaTask = async ({
   ctx,
   taskDeadline = allowedTaskTime,
   user,
-  session,
-}: {
-  ctx: BotContext;
-  user: User;
-  taskDeadline?: number;
-  session: SessionData | MyWizardSession;
-}) => {
+}: GenerateCaptchaTaskParams) => {
   const { message: captchaMessage, answer } = generateDigitCaptcha();
-  session.captchaAnswer = answer.toString();
+  ctx.session.captchaAnswer = answer.toString();
   const captcha = await ctx.replyWithMarkdownV2(
     customMention(user.username || user.first_name, user.id) +
       escapeForMarkdown2(
         `\n${captchaMessage}\n\nLeft attempts - ${
-          maxAttempt - session.counter
+          maxAttempt - ctx.session.counter
         }.\n\nYou have ${taskDeadline} seconds for each attempt to solve the task.
         \nIf you don't send answer during any of the attempts you will be kicked from the chat and banned for ${banTime}h.`,
       ),
@@ -68,5 +69,21 @@ export const generateDigitCaptchaTask = async ({
     chatID: captcha.chat.id,
     messageID: captcha.message_id,
   });
-  session.counter = session.counter + 1;
+  ctx.session.counter = ctx.session.counter + 1;
+};
+
+export const generateCaptchaTask = async (params: GenerateCaptchaTaskParams) => {
+  switch (params.ctx.session.captcha) {
+    case CaptchaEnum.DIGITS:
+      logger.info('Generating digit captcha');
+      await generateDigitCaptchaTask(params);
+      break;
+
+    case CaptchaEnum.IMAGE:
+      logger.info('Generating image captcha');
+      await generateDigitCaptchaTask(params);
+      break;
+    default:
+      logger.warn(`Captcha not found, captcha - ${params.ctx.session.captcha}`);
+  }
 };

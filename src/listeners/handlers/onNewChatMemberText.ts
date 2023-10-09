@@ -1,7 +1,7 @@
 import { MessageUpdate } from '../../contracts';
 import logger from '../../logger/logger';
 import { taskManager } from '../../helpers/taskManager';
-import { captchaWizardID } from '../../scenes/digitCaptchaWizardScene';
+import { captchaWizardID } from '../../scenes/captchaWizardScene';
 import { deleteMessage } from '../../helpers/helpers';
 
 export const onNewChatMemberText = async (ctx: MessageUpdate) => {

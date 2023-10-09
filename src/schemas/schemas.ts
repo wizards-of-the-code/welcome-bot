@@ -93,7 +93,7 @@ export const chatSettingsSchema = new Schema<ChatSettingsType>(
     captcha: {
       type: String,
       required: false,
-      enum: [CaptchaEnum.DIGIT, CaptchaEnum.IMAGE],
+      enum: [CaptchaEnum.DIGITS, CaptchaEnum.IMAGE],
     },
     footer: { type: ObjectId, ref: 'Footer', required: true },
   },

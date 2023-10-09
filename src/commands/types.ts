@@ -4,6 +4,7 @@ export enum CommandEnum {
   'SETUP_GROUP' = 'setup_group',
   'STOP_GROUP' = 'stop_group',
   'OWNER_MESSAGE' = 'owner_message',
+  'CAPTCHA' = 'captcha'
 }
 
 export interface CustomCommand extends BotCommand {

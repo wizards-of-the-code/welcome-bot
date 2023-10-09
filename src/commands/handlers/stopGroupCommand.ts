@@ -11,7 +11,7 @@ export class StopGroupCommand extends Command {
         logger.info('Handling stop group command');
 
         const { chat } = ctx;
-        if (!chat || !ctx.from) return;
+        if (!chat || !ctx.from || chat.type === 'private') return;
 
         const admins = await ctx.getChatAdministrators();
         const adminsIDs = admins.map((admin) => admin.user.id);
@@ -20,7 +20,6 @@ export class StopGroupCommand extends Command {
         if (
           !chatSettings ||
           !chatSettings.botEnabled ||
-          chatSettings.chatType === 'private' ||
           !adminsIDs.includes(ctx.from.id)
         ) {
           return;

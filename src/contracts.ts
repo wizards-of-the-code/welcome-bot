@@ -1,19 +1,16 @@
 import { Context, NarrowedContext, Scenes, Telegraf } from 'telegraf';
 import { Message, Update, User } from '@telegraf/types';
+import {CaptchaEnum} from "./schemas/types";
 
 export type NewChatMembers = Message.NewChatMembersMessage['new_chat_members'];
 
-export interface MyWizardSession extends Scenes.WizardSessionData {
-  captchaAnswer: string;
-  counter: number;
-}
-export type MySceneSession = Scenes.SceneContextScene<BotContext, MyWizardSession>
 
-export interface SessionData extends Scenes.WizardSession<MyWizardSession> {
+export interface SessionData extends Scenes.WizardSession {
   ownerMessage: string;
   newChatMember: User;
   captchaAnswer: string;
   counter: number;
+  captcha?: CaptchaEnum;
   welcome: {
     welcomeMessage: string;
     footer: string;
@@ -26,7 +23,7 @@ export interface SessionData extends Scenes.WizardSession<MyWizardSession> {
 
 export interface BotContext extends Context {
   session: SessionData;
-  scene: MySceneSession;
+  scene: Scenes.SceneContextScene<BotContext, Scenes.WizardSessionData>;
   wizard: Scenes.WizardContextWizard<BotContext>;
 }
 

@@ -1,4 +1,7 @@
 import { escapers } from '@telegraf/entity';
+import { SessionData } from '../../contracts';
+import { User } from '@telegraf/types';
+import { ChatSettingsType } from '../../schemas/types';
 
 /**
  * Takes error and returns error message
@@ -37,3 +40,18 @@ export const customMention = (username: string, id: number): string =>
  * */
 export const addBackslashBeforeSpecialChars = (text: string): string =>
   text.replace(/[^A-ZА-Я0-9]/gi, '\\$&');
+
+export const formSessionOnNewChatMember = ({ session, newMember, chatSettings }: {
+  session: SessionData;
+  newMember: User;
+  chatSettings: ChatSettingsType;
+}) => {
+  session.welcome = {
+    welcomeMessage: chatSettings.message,
+    footer: chatSettings.footer.message,
+    previousSentMessage: chatSettings.previousSentMessage,
+  };
+  session.newChatMember = newMember;
+  session.counter = 0;
+  session.captcha = chatSettings.captcha;
+};
