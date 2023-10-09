@@ -10,8 +10,8 @@ import { getErrorMsg } from '../../listeners/helpers/helpers';
 import {
   getAllChatsWhereBotEnabled,
   getPrivateChatsWhereBotEnabled,
-  getPublicChatsWhereBotEnabled
-} from "../helpers/dbRequests";
+  getPublicChatsWhereBotEnabled,
+} from '../helpers/dbRequests';
 
 export enum OwnerMessageAction {
   'SAVE' = 'owner-message-save',
@@ -55,18 +55,8 @@ export const selectGroupTypeButtons: InlineKeyboardButton.CallbackButton[][] = [
 
 const getSelectButtons = (chatType: ChatType) => [
   [Markup.button.callback('отправить🔕', ownerMessageActionMap[chatType].sendQuitely)],
-  [
-    Markup.button.callback(
-      'отправить🔔',
-      ownerMessageActionMap[chatType].sendWithNotification,
-    ),
-  ],
-  [
-    Markup.button.callback(
-      'отправить и закрепить📌🔕',
-      ownerMessageActionMap[chatType].pinQuitely,
-    ),
-  ],
+  [Markup.button.callback('отправить🔔', ownerMessageActionMap[chatType].sendWithNotification)],
+  [Markup.button.callback('отправить и закрепить📌🔕', ownerMessageActionMap[chatType].pinQuitely)],
   [
     Markup.button.callback(
       'отправить и закрепить📌🔔',
@@ -77,6 +67,7 @@ const getSelectButtons = (chatType: ChatType) => [
 
 export class OwnerMessageCommand extends Command {
   chats: number[] = [];
+
   handle(): void {
     try {
       this.bot.command(CommandEnum.OWNER_MESSAGE, async (ctx) => {

@@ -36,7 +36,7 @@ export const sendMessageToChats = async ({
     chats.map((chatId) =>
       sendMessageToChat({
         chatId,
-        message,
+        message: message,
         ctx,
         disableNotification,
       }),
@@ -59,7 +59,7 @@ export const sendAndPinMessageToChats = async ({
     chats.map((chatId) =>
       sendMessageToChat({
         chatId,
-        message,
+        message: message,
         ctx,
         disableNotification,
       }).then((sentMessage) =>
