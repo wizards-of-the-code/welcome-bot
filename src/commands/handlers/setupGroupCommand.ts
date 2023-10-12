@@ -19,8 +19,7 @@ export class SetupGroupCommand extends Command {
         if (chatSettings?.botEnabled) {
           await ctx.reply('Bot is already activated');
           return;
-        };
-
+        }
         const admins = await ctx.getChatAdministrators();
         const adminsIDs = admins.map((admin) => admin.user.id);
         const creator = admins.find((admin) => admin.status === 'creator');
@@ -55,7 +54,11 @@ export class SetupGroupCommand extends Command {
             isPrivateGroup,
           });
         }
-        await ctx.deleteMessage(ctx.message.message_id);
+        try {
+          await ctx.deleteMessage(ctx.message.message_id);
+        } catch (e) {
+          logger.error(getErrorMsg(e));
+        }
         await ctx.reply('Bot is activated');
       } catch (e) {
         logger.error(`While handling setup group command ${getErrorMsg(e)}`);

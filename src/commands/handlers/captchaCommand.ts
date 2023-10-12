@@ -11,6 +11,7 @@ import { CaptchaEnum } from '../../schemas/types';
 export const selectCaptchaType: InlineKeyboardButton.CallbackButton[][] = [
   [Markup.button.callback('Digits', CaptchaEnum.DIGITS)],
   [Markup.button.callback('Image', CaptchaEnum.IMAGE)],
+  [Markup.button.callback('None', CaptchaEnum.NONE)],
 ];
 
 export class CaptchaCommand extends Command {
@@ -36,7 +37,7 @@ export class CaptchaCommand extends Command {
         await ctx.reply('Select captcha type', {
           reply_markup: {
             inline_keyboard: selectCaptchaType,
-            one_time_keyboard: true
+            one_time_keyboard: true,
           },
         });
 
@@ -54,6 +55,14 @@ export class CaptchaCommand extends Command {
           await context.deleteMessage();
           await chatSettings.updateOne({ captcha: CaptchaEnum.IMAGE });
           await ctx.reply(`I'll use this type of test! (${CaptchaEnum.IMAGE})`);
+        });
+
+        this.bot.action(CaptchaEnum.NONE, async (context) => {
+          if (!context || !context.from || !adminsIDs.includes(context.from.id)) return;
+          logger.info(`Captcha ${CaptchaEnum.NONE} is set in chat ${chatSettings.chatTitle}`);
+          await context.deleteMessage();
+          await chatSettings.updateOne({ captcha: CaptchaEnum.NONE });
+          await ctx.reply('Captcha is disabled');
         });
       });
     } catch (e) {

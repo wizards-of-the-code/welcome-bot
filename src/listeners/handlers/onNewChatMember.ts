@@ -5,6 +5,7 @@ import { sendCaptcha } from '../../captcha/captcha';
 import { deleteMessage } from '../../helpers/helpers';
 import { welcomeNewMember } from '../../middlewares/welcomeNewMember';
 import { formSessionOnNewChatMember } from '../helpers/helpers';
+import { CaptchaEnum } from '../../schemas/types';
 
 export const onNewChatMember = (bot: Bot) => {
   bot.on(message('new_chat_members'), async (ctx) => {
@@ -20,7 +21,7 @@ export const onNewChatMember = (bot: Bot) => {
 
     formSessionOnNewChatMember({ chatSettings, newMember, session: ctx.session });
 
-    if (chatSettings.captcha) {
+    if (chatSettings.captcha && chatSettings.captcha !== CaptchaEnum.NONE) {
       await sendCaptcha({
         ctx,
         user: newMember,

@@ -17,7 +17,8 @@ export type CreatorType = {
 
 export enum CaptchaEnum {
   DIGITS = 'digits',
-  IMAGE = 'image'
+  IMAGE = 'image',
+  NONE = 'none'
 }
 export type ChatSettingsType = {
   _id: ObjectId;
